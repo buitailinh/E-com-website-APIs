@@ -6,6 +6,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './items.constant';
 import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Item } from './entities/item.entity';
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { AppObject } from 'src/share/common/app.object';
 
 @ApiTags('Items')
 @Controller('items')
@@ -39,6 +41,7 @@ export class ItemsController {
   @ApiBadRequestResponse({
     description: 'Item cannot register. Try again!',
   })
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   create(@UploadedFile() image, @Body() createItemDto: CreateItemDto) {

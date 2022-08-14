@@ -71,10 +71,8 @@ export class AppObject {
   static readonly USER_MODULE = {
     ROLE: {
       PRO: 'Pro',
-      LITE: 'Lite',
-      BASIC: 'Basic',
       ADMIN: 'Admin',
-      CS: 'Cs',
+      CLIENT: 'CLIENT',
     },
     ACCOUNT_TYPE: {
       MOBILE: 'mobile',

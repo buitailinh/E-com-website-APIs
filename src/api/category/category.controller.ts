@@ -5,7 +5,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { multerOptions } from './category.constant';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Category')
 @Controller('category')
@@ -69,6 +69,7 @@ export class CategoryController {
   @ApiBadRequestResponse({
     description: 'Category cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   update(@Param('id') id: number, @UploadedFile() image, @Body() updateCategoryDto: UpdateCategoryDto) {

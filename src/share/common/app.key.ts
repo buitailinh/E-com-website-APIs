@@ -92,6 +92,8 @@ export class AppKey {
     USER: {
       ERR_EXIST: 'User already exists!',
       ERR_NOT_EXIST: 'User is not exists!',
+      ERR_NOT_EMAIL_EXIST: 'Email is not exist!',
+      ERR_NOT_PASS_CORRECT: 'Password is incorrect!',
       ERR_ID_NOT_VALID: 'Id user not valid!',
       ERR_CANT_CHANGE_ROLE: 'Can not change role!',
       ERR_PHONE_EXIST: 'Phone number already exists!',

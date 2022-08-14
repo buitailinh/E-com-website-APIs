@@ -21,7 +21,7 @@ export class CategoryService {
     const data = await this.categoryRepository.findAndOptions({
       where: { nameCategory: Like('%' + keyword + '%') },
       order: {
-        nameCategory: query.order === "descend" ? 'DESC' : 'ASC',
+        nameCategory: query.order,
       },
       take: take,
       skip: skip,

@@ -6,7 +6,7 @@ import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './images.constant';
 import { Image } from './entities/image.entity'
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Images')
 @Controller('images')
@@ -52,7 +52,18 @@ export class ImagesController {
     description: 'Image cannot register. Try again!',
   })
   @ApiParam({ name: 'id' })
-  @ApiBody({ type: CreateImageDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { // 👈 this property
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Post(':id')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async create(@UploadedFile() image, @Body() createImageDto: CreateImageDto, @Param('id') id: string) {

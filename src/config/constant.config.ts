@@ -2,8 +2,8 @@ import { config } from 'dotenv';
 config();
 
 export const JWT_CONFIG = {
-    secret: process.env.TOKEN_SECRET,
-    expiresIn: process.env.TOKEN_EXPIRED_IN,
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRE_TIME,
 };
 
 export const MYSQL_CONFIG = {

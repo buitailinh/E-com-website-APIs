@@ -37,6 +37,10 @@ export class TypeOrmRepository<T extends BaseEntity> {
     return this.repository.find();
   }
 
+  async finByIds(id: any) {
+    return this.repository.findBy(id);
+  }
+
   async findAndOptions(data: any): Promise<any> {
     return this.repository.findAndCount(data);
   }
