@@ -2,7 +2,7 @@ import { confirmEmailLink } from './../../share/utils/utils/confirmEmailLink';
 import { sendEmail } from './../../share/utils/utils/sendEmail';
 import { AppObject } from 'src/share/common/app.object';
 import { AppKey } from './../../share/common/app.key';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Like, ObjectID } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,7 +13,7 @@ import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository,) { };
+  constructor(public userRepository: UserRepository,) { };
   async findAll(query) {
     const take = query.take || process.env.TAKE_PAGE;
     const page = query.page || 1;
@@ -34,13 +34,13 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.userRepository.findOneByCondition({
-      where: {
-        id,
-      }
+      where: { id, },
+      relations: ['orders']
     });
     if (!user) return null;
     return user;
   }
+
 
   async getByName(name: string): Promise<User> {
     const user = await this.userRepository.findOneByCondition({
@@ -52,13 +52,14 @@ export class UsersService {
     return user;
   }
 
-  async getByEmail(email: string): Promise<User | null> {
+  async getByEmail(email: string): Promise<User> {
+
     const user = await this.userRepository.findOneByCondition({
       where: {
         email,
       }
     });
-    if (!user) return null;
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
     return user;
   }
 
@@ -72,12 +73,28 @@ export class UsersService {
     return user;
   }
 
+
+
   async create(createUserDto: CreateUserDto, file?: string) {
     const { email, phone, password, ...data } = createUserDto;
-    const emailUser = await this.getByEmail(email);
-    if (emailUser) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_EMAIL_EXIST });
+    const emailUser = await this.userRepository.findOneByCondition({ where: { email } });
+    if (emailUser)
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: AppKey.ERROR_MESSAGE.USER.ERR_EMAIL_EXIST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     const phoneUser = await this.getByPhone(phone);
-    if (phoneUser) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST });
+    if (phoneUser)
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
 
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
@@ -89,26 +106,39 @@ export class UsersService {
       avatar: file,
       ...data,
     }
-    return await this.userRepository.create(user);
+    return await this.userRepository.save(user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, file?: string) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     const userFound = await this.findOne(id);
 
-    const { phone, ...data } = updateUserDto;
-    console.log(data)
-    const phoneUser = await this.getByPhone(phone);
-    if (phoneUser && userFound.phone !== phoneUser.phone) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST });
-
+    const { role, } = updateUserDto;
     const user = {
-      phone,
-      avatar: file,
-      ...data,
+      role,
+      // isVerify: true,
     }
-    // const userUpdate = Object.assign(userFound, user);
-    await this.userRepository.update(id, user);
+    const userUpdate = Object.assign(userFound, user);
+    await this.userRepository.update(id, userUpdate);
 
     return { message: `Update successfully id ${id}` }
+  }
+
+
+  async UpdateByUser(updateUserDto: UpdateUserDto, user: User, file?: string) {
+    const { phone, fullname, address, brithday } = updateUserDto;
+    if (phone) {
+      const phoneUser = await this.getByPhone(phone);
+      if (phoneUser && user.phone !== phoneUser.phone) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST });
+    }
+    const updateUser = {
+      phone,
+      avatar: file,
+      fullname,
+      address,
+      brithday,
+    }
+
+    return await this.userRepository.save({ ...user, ...updateUser });
   }
 
   async remove(ids: number[]) {
@@ -118,6 +148,7 @@ export class UsersService {
       for (const id of ids) {
         // console.log(id);
         const user = await this.findOne(id);
+        if (user.role === AppObject.USER_MODULE.ROLE.PRO) throw new NotFoundException({ message: `${id} this is manager ` });
         // console.log(user);
         if (!user) await userNotExit.push(id);
         else {
@@ -133,5 +164,17 @@ export class UsersService {
     }
 
     return { message: `This action removes  users` };
+  }
+
+  async verifyEmail(email: string) {
+    const user = await this.getByEmail(email);
+    return await this.userRepository.save({ ...user, isVerify: true });
+  }
+
+  async resertPassword(email: string, newPassword: string) {
+    const user = await this.getByEmail(email);
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    return await this.userRepository.save({ ...user, password: hashPassword });
   }
 }

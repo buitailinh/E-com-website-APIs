@@ -125,6 +125,7 @@ export class AppKey {
     CATEGORY: {
       ERR_EXIST: ' Category already exists!',
       ERR_NOT_EXIST: ' Category is not exists!',
+      ERR_ID_EXIST: 'Id Category already exists!',
       ERR_ID_NOT_VALID: 'Id  Category not valid!',
       ERR_REFERRAL_CODE_WRONG: 'Wrong referral code. Please try again!'
     },
@@ -134,6 +135,17 @@ export class AppKey {
       ERR_ID_NOT_VALID: 'Id  image not valid!',
       ERR_REFERRAL_CODE_WRONG: 'Wrong referral code. Please try again!'
     },
+    VOUCHER: {
+      ERR_EXIST: 'Vourch already exists!',
+      ERR_NOT_EXIST: 'Vourch is not exists!',
+      ERR_ID_NOT_VALID: 'Id  vourch not valid!',
+      ERR_ID_NOT_EXIST: 'Id vourch not exist!',
+      ERR_ID_EXITS: 'Id vourch already exists!',
+      ERR_CODEVOURCH_NOT_EXIST: 'Code vourch not exist!',
+      ERR_CODEVOURCH_NOT_VALID: 'Code vourch not valid!',
+      ERR_CODEVOURCH_EXITS: 'Code vourch already exists!',
+      ERR_REFERRAL_CODE_WRONG: 'Wrong referral code. Please try again!'
+    }
   };
 
   static readonly CODE_PREFIX = {

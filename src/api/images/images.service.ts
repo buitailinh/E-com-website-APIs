@@ -33,9 +33,8 @@ export class ImagesService {
 
   async findOne(id: number) {
     const image = await this.imageRepository.findOneByCondition({
-      where: {
-        id,
-      }
+      where: { id, },
+      relations: ['item']
     });
     if (!image) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.IMAGE.ERR_ID_NOT_VALID });
 

@@ -57,7 +57,7 @@ export class ImagesController {
     schema: {
       type: 'object',
       properties: {
-        file: { // 👈 this property
+        file: {
           type: 'string',
           format: 'binary',
         },

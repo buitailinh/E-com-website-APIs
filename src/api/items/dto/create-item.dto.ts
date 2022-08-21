@@ -10,6 +10,7 @@ export class CreateItemDto {
         required: true,
         description: 'Name item is not empty',
         example: 'name item',
+        type: 'string'
     })
     @IsNotEmpty({ message: "Name item not empty" })
     @IsString()
@@ -20,6 +21,7 @@ export class CreateItemDto {
         required: true,
         description: 'barcode just the only one',
         example: 'name item',
+        type: 'string'
     })
     @IsNotEmpty({ message: "Barcode item not empty" })
     @IsString()
@@ -31,68 +33,77 @@ export class CreateItemDto {
         required: true,
         description: 'Price imput',
         example: '10.000',
+        type: 'int',
     })
     @Type(() => Number)
     @IsNumber()
     @Min(0, { message: ' price must be greater than 0' })
-    priceIM: number;
+    priceIM?: number;
 
 
     @ApiProperty({
         required: true,
         description: 'Price export',
         example: '15.000',
+        type: 'int',
     })
     @Type(() => Number)
     @IsNumber()
     @Min(0, { message: ' price must be greater than 0' })
-    priceEX: number;
+    priceEX?: number;
 
 
     @ApiProperty({
         required: false,
         description: 'file image of product',
         example: 'name item',
+        type: 'string',
     })
     imageMain?: string;
 
     @ApiProperty({
         required: false,
-        description: 'information of product',
+        description: 'description of product',
         example: 'name item',
+        type: 'string',
     })
-    information?: string;
+    @IsString()
+    description?: string = null;
 
 
     @ApiProperty({
         required: false,
         description: 'sale of product',
         example: '10',
+        type: 'int'
     })
     @Min(0, { message: ' price sale must be greater than 0%' })
     @Max(100, { message: ' price sale must be less than 100%' })
+    @IsNumber()
     @Type(() => Number)
-    sale?: number;
+    sale?: number = 0;
 
 
     @ApiProperty({
         required: true,
         description: 'Number of product',
         example: '10',
+        type: 'int',
     })
     @Type(() => Number)
     @IsNumber()
     @Min(0, { message: 'Number product must be greater than 0' })
-    sluong: number;
+    quantity?: number;
 
 
     @ApiProperty({
-        required: false,
+        required: true,
         description: 'number of product',
         example: '12',
+        type: 'int',
     })
+    @IsNotEmpty({ message: "Category item not empty" })
     @Type(() => Number)
-    @Min(0, { message: 'Number product must be greater than 0' })
-    sluongBan: number;
+    categoryId?: number;
 
 }

@@ -1,5 +1,6 @@
+import { DatabaseModule } from 'src/config/database/database.module';
+import { OtpModule } from './../otp/otp.module';
 import { ConfigModule } from '@nestjs/config';
-import { SessionSerializer } from './serializer/session.serializer';
 import { jwtConfig } from './../../config/jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -11,11 +12,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { JWT_CONFIG } from 'src/config/constant.config';
 import { UsersModule } from 'src/api/users/users.module';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { SendmailModule } from '../sendmail/sendmail.module';
 
 @Module({
-  imports: [UsersModule, PassportModule, ConfigModule,  //.register({ session: true })
-    JwtModule.registerAsync(jwtConfig)],
+  imports: [DatabaseModule, UsersModule, PassportModule, OtpModule, ConfigModule,  //.register({ session: true })
+    JwtModule.registerAsync(jwtConfig), SendmailModule],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy]   //SessionSerializer
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  exports: [AuthService],
 })
 export class AuthModule { }

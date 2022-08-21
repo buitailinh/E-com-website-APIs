@@ -14,7 +14,7 @@ export class CategoryController {
 
   @ApiOkResponse({
     type: Category,
-    description: 'List item of page'
+    description: 'List category'
   })
   @Get()
   findAll(@Query() query) {
@@ -34,11 +34,12 @@ export class CategoryController {
 
   @ApiOkResponse({
     type: Category,
-    description: 'Create a new category object as response',
+    description: 'Create a new category successfully',
   })
   @ApiBadRequestResponse({
-    description: 'Category cannot register. Try again!',
+    description: 'Category cannot create. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   create(@UploadedFile() image, @Body() createCategoryDto: CreateCategoryDto) {
@@ -64,7 +65,7 @@ export class CategoryController {
 
   @ApiOkResponse({
     type: Category,
-    description: 'Update category object as response',
+    description: 'Update category successfully',
   })
   @ApiBadRequestResponse({
     description: 'Category cannot update. Try again!',
@@ -78,11 +79,12 @@ export class CategoryController {
 
   @ApiOkResponse({
     type: Category,
-    description: 'Update image category object as response',
+    description: 'Update image category successfully',
   })
   @ApiBadRequestResponse({
     description: 'Category cannot update image. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   updateImage(@Param('id') id: number, @UploadedFile() image,) {
@@ -90,11 +92,12 @@ export class CategoryController {
   }
 
   @ApiOkResponse({
-    description: 'Delete a category object as response',
+    description: 'Delete a category successfully',
   })
   @ApiBadRequestResponse({
     description: 'Category cannot delete. Try again!',
   })
+  @ApiParam({ name: 'id' })
   @Delete(':id')
   remove(@Param('id') id: string) {
 
@@ -103,11 +106,12 @@ export class CategoryController {
 
   @ApiOkResponse({
     type: Category,
-    description: 'Delete image category object as response',
+    description: 'Delete image category successfully',
   })
   @ApiBadRequestResponse({
     description: 'Category cannot delete image. Try again!',
   })
+  @ApiParam({ name: 'id' })
   @Delete('/image/:id')
   removeFile(@Param('id') id: string) {
     return this.categoryService.removeFile(+id);

@@ -10,34 +10,39 @@ import { UsersModule } from './api/users/users.module';
 import { AuthModule } from './share/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { MailerModule } from '@nestjs-modules/mailer';
-
-
+import { VoucherModule } from './api/voucher/voucher.module';
+import { FlashSaleModule } from './api/flash_sale/flash_sale.module';
+import { ItemFlashsaleModule } from './api/item_flashsale/item_flashsale.module';
+import { OrderDetailModule } from './api/order_detail/order_detail.module';
+import { OrderModule } from './api/order/order.module';
+import { SendmailModule } from './share/sendmail/sendmail.module';
+import { OtpModule } from './share/otp/otp.module';
+import { CronjobModule } from './share/cornjob/cronjob.module';
+import { CronjobService } from './share/cornjob/cronjob.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     CategoryModule,
     ItemsModule,
     ImagesModule,
     UsersModule,
     AuthModule,
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.sendgrid.net',
-        auth: {
-          user: 'apikey',
-          pass: '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',
-        }
-      }
-    })
+    VoucherModule,
+    FlashSaleModule,
+    ItemFlashsaleModule,
+    OrderDetailModule,
+    OrderModule,
+    SendmailModule,
+    OtpModule,
+    CronjobModule
   ],
   controllers: [],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // }
+    CronjobService
   ],
 })
 export class AppModule implements NestModule {

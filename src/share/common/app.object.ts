@@ -70,8 +70,8 @@ export class AppObject {
 
   static readonly USER_MODULE = {
     ROLE: {
-      PRO: 'Pro',
-      ADMIN: 'Admin',
+      PRO: 'PRO',
+      ADMIN: 'ADMIN',
       CLIENT: 'CLIENT',
     },
     ACCOUNT_TYPE: {

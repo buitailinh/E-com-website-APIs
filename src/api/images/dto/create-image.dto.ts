@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class CreateImageDto {
     @ApiProperty({
@@ -9,4 +9,8 @@ export class CreateImageDto {
     })
     @IsString()
     note?: string = '';
+
+    // @ApiProperty({ type: 'number' })
+    // @IsNumber()
+    // itemId: number;
 }

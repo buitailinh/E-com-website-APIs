@@ -1,17 +1,22 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
-import { IsBoolean, IsBooleanString, IsNotEmpty, IsString, MinLength } from "class-validator";
-import { ToBoolean } from "src/share/common/app.const";
+import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import {
+    IsBoolean,
+    IsBooleanString,
+    IsNotEmpty,
+    IsString,
+    MinLength,
+} from 'class-validator';
 
 export class CreateCategoryDto {
-    @IsNotEmpty({
-        message: 'Name category is not empty',
-    })
+
     @ApiProperty({
         required: true,
-        description: 'Name category is not empty',
+        description: 'Name category ',
         example: 'name category',
+        type: 'string',
     })
+    @IsNotEmpty({ message: 'Name category is not empty', })
     @IsString()
     @MinLength(4, { message: 'name category is min lengh 4' })
     nameCategory: string;
@@ -20,18 +25,18 @@ export class CreateCategoryDto {
         required: false,
         description: 'file image category ',
         example: 'a.jpg',
+        type: 'string',
+        format: 'binary',
     })
-    file?: string;
-
+    banner?: string;
 
     @ApiProperty({
         required: false,
         description: 'active category: active/inactive ',
         example: 'true',
+        type: 'boolean',
     })
+    @IsBoolean()
     @Type(() => Boolean)
-    // @IsBoolean()
     active?: boolean;
-
-
 }

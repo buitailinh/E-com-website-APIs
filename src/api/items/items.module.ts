@@ -1,3 +1,4 @@
+import { CategoryModule } from './../category/category.module';
 
 import { itemProvider } from './items.provider';
 import { ItemRepository } from './items.repository';
@@ -8,7 +9,7 @@ import { DatabaseModule } from 'src/config/database/database.module';
 
 
 @Module({
-  imports: [DatabaseModule,
+  imports: [DatabaseModule, CategoryModule,
     // forwardRef(() => ImagesModule,)
   ],
   controllers: [ItemsController],

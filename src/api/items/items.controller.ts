@@ -14,20 +14,29 @@ import { AppObject } from 'src/share/common/app.object';
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) { }
 
-  @ApiOkResponse({ type: Item })
+  @ApiOkResponse({
+    description: 'List of items',
+    type: Item
+  })
   @Get()
   findAll(@Query() query) {
     return this.itemsService.findAll(query);
   }
 
-  @ApiOkResponse({ type: Item })
+  @ApiOkResponse({
+    description: 'Information about an item',
+    type: Item
+  })
   @ApiParam({ name: 'id' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemsService.getById(+id);
   }
 
-  @ApiOkResponse({ type: Item })
+  @ApiOkResponse({
+    type: Item,
+    description: 'Item details'
+  })
   @ApiParam({ name: 'nameItem' })
   @Get(':nameItem')
   findByName(@Param('nameItem') nameItem: string) {
@@ -49,12 +58,40 @@ export class ItemsController {
     return this.itemsService.create(createItemDto, image?.filename);
   }
 
+  @ApiOkResponse({
+    type: Item,
+    description: 'Add  quantity of item object as response',
+  })
+  @ApiBadRequestResponse({
+    description: 'Item cannot  add quantity. Try again!',
+  })
+  @Post('addAmount/:id')
+  addAmount(@Param('id') id: string, @Body('amount') amount: number) {
+    return this.itemsService.addSLB(+id, amount);
+  }
 
+  @ApiOkResponse({
+    description: 'See file Image of item',
+  })
   @Get('/images/:image')
   seeFile(@Param('image') image, @Res() res) {
     return res.sendFile(image, { root: './images/itemMain' });
   }
 
+
+  @ApiOkResponse({
+    type: Item,
+    description: 'Update image Item object as response',
+  })
+  @ApiBadRequestResponse({
+    description: 'Item cannot update image. Try again!',
+  })
+  @Patch('uploadfile/:id')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  updateImageMain(@Param('id') id: number, @UploadedFile() image,) {
+    // console.log(id);
+    return this.itemsService.updateImageMain(+id, image?.filename);
+  }
 
   @ApiOkResponse({
     type: Item,
@@ -69,18 +106,6 @@ export class ItemsController {
     return this.itemsService.update(+id, updateItemDto, image?.filename);
   }
 
-  @ApiOkResponse({
-    type: Item,
-    description: 'Update image Item object as response',
-  })
-  @ApiBadRequestResponse({
-    description: 'Item cannot update image. Try again!',
-  })
-  @Patch(':id')
-  @UseInterceptors(FileInterceptor('file', multerOptions))
-  updateImageMain(@Param('id') id: number, @UploadedFile() image,) {
-    return this.itemsService.updateImageMain(+id, image?.filename);
-  }
 
   @ApiOkResponse({
     description: 'Delete a item object as response',
@@ -92,7 +117,6 @@ export class ItemsController {
   remove(@Param('id') id: string) {
     return this.itemsService.remove(+id);
   }
-
 
   @ApiOkResponse({
     type: Item,
