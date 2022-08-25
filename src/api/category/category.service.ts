@@ -7,18 +7,25 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Like } from 'typeorm';
 import * as fs from 'fs';
 import { from, map } from 'rxjs';
+import { parse } from 'path';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly categoryRepository: CategoryRepository,) { };
+  constructor(public categoryRepository: CategoryRepository,) { };
 
   async findAll(query) {
     const take = query.take || process.env.TAKE_PAGE;
     const page = query.page || 1;
     const skip = (page - 1) * take;
     const keywork = query.keywork || '';
+    let active: boolean;
+    if (query.active) {
+      if (query.active === 'true')
+        active = true;
+      else { active = false; }
+    }
     const data = await this.categoryRepository.findAndOptions({
-      where: { nameCategory: Like('%' + keywork + '%'), active: query.active },
+      where: { nameCategory: Like('%' + keywork + '%'), active: active },
       order: {
         nameCategory: query.order,
       },
@@ -81,14 +88,14 @@ export class CategoryService {
     return await this.categoryRepository.update(id, categoryUpdate);
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto, image: string) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto, image: string) {   // 
     const category = this.getById(id);
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
     if (image) {
       await this.removeFile(id);
     }
     const CategoryFeld = {
-      banner: image,
+      banner: image,     //
       ...updateCategoryDto,
     }
     const categoryUpdate = Object.assign(category, CategoryFeld);
@@ -103,7 +110,9 @@ export class CategoryService {
     await this.removeFile(id);
     await this.categoryRepository.delete(id);
     return { message: `This action removes a #${id} category` };
-  }
+  };
+
+
   async removeFile(id: number) {
     const category = await this.getById(id);
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });

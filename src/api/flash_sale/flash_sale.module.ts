@@ -5,9 +5,10 @@ import { DatabaseModule } from './../../config/database/database.module';
 import { Module } from '@nestjs/common';
 import { FlashSaleService } from './flash_sale.service';
 import { FlashSaleController } from './flash_sale.controller';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [DatabaseModule, ItemFlashsaleModule],
+  imports: [DatabaseModule, ItemFlashsaleModule, UsersModule],
   controllers: [FlashSaleController],
   providers: [FlashSaleService, FlashSaleRepository, ...flashSaleProvider],
   exports: [FlashSaleService, FlashSaleRepository]

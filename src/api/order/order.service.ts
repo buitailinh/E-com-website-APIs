@@ -1,3 +1,4 @@
+import { StatusDto } from './dto/status-order.dto';
 import { AppKey } from 'src/share/common/app.key';
 import { async } from 'rxjs';
 import { query } from 'express';
@@ -72,7 +73,6 @@ export class OrderService {
         address: user.address,
         phone: user.phone,
         user,
-        dateOrder: new Date(),
         ...data,
       });
 
@@ -109,11 +109,18 @@ export class OrderService {
     }
   }
 
-  async update(id: number, updateOrderDto: UpdateOrderDto) {
+  async update(id: number, updateOrderDto: UpdateOrderDto, user: User) {
     const order = await this.findOne(id);
+    if (order.user.id !== user.id) throw new NotFoundException({ message: 'user not ....' })
     await this.orderRepository.save({ ...order, ...updateOrderDto });
     return { code: 200, message: 'Order updated successfully' };
+  }
 
+  async updateStatus(id: number, status) {
+    console.log(status);
+    const order = await this.findOne(id);
+    await this.orderRepository.save({ ...order, status });
+    return { code: 200, message: `Order with ID order ${id} and status ${status} updated successfully` };
   }
 
   async remove(id: number) {

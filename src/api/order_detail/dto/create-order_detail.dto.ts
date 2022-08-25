@@ -9,6 +9,7 @@ export class CreateOrderDetailDto {
         description: 'Quatity of item the order',
         example: '5',
         type: 'int',
+        minimum: 0,
     })
     @IsNotEmpty({ message: 'Please imput is a quantity' })
     @IsNumber()

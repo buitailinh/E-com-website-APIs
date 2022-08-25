@@ -49,7 +49,7 @@ export class OrderDetailService {
             HttpStatus.FORBIDDEN,
           );
         }
-        price = itemSale.total * quantity;
+        price = item.total * quantity;
         const item_flashsale = await this.itemFSService.findOne(
           itemSale.item_flashsale_id,
         );
@@ -67,7 +67,7 @@ export class OrderDetailService {
           HttpStatus.FORBIDDEN,
         );
       }
-      price = item.priceEX * quantity * (100 - item.sale) / 100;
+      price = item.total * quantity;
     }
     item.quantity -= quantity;
     await this.itemsService.itemRepository.save(item);

@@ -15,20 +15,23 @@ export class CreateCategoryDto {
         description: 'Name category ',
         example: 'name category',
         type: 'string',
+        minimum: 4,
     })
     @IsNotEmpty({ message: 'Name category is not empty', })
     @IsString()
     @MinLength(4, { message: 'name category is min lengh 4' })
     nameCategory: string;
 
+
     @ApiProperty({
         required: false,
         description: 'file image category ',
-        example: 'a.jpg',
+        // example: 'a.jpg',
         type: 'string',
         format: 'binary',
     })
-    banner?: string;
+    file?: string;
+
 
     @ApiProperty({
         required: false,
@@ -38,5 +41,8 @@ export class CreateCategoryDto {
     })
     @IsBoolean()
     @Type(() => Boolean)
-    active?: boolean;
+    active?: boolean = true;
 }
+
+
+

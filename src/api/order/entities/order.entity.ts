@@ -1,7 +1,8 @@
+import { AppObject } from 'src/share/common/app.object';
+import { BaseEntity } from './../../../share/database/BaseEntity';
 import { OrderDetail } from './../../order_detail/entities/order_detail.entity';
 import { User } from './../../users/entities/user.entity';
 import { Voucher } from './../../voucher/entities/voucher.entity';
-import { BaseEntity } from 'src/share/database/BaseEntity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ORDER_CONST } from './../order.constant';
 
@@ -23,8 +24,8 @@ export class Order extends BaseEntity {
     @Column()
     note: string;
 
-    @Column('datetime')
-    dateOrder: Date;
+    @Column({ type: 'enum', enum: AppObject.ORDER.STATUS, default: AppObject.ORDER.STATUS.WFC })
+    status: string;
 
     @ManyToOne(() => Voucher, (voucher) => voucher.orders)
     voucher?: Voucher;

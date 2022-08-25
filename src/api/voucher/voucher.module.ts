@@ -1,3 +1,5 @@
+import { UsersModule } from './../users/users.module';
+import { AuthModule } from './../../share/auth/auth.module';
 import { voucherProvider } from './voucher.provider';
 import { VoucherRepository } from './voucher.repository';
 import { Module } from '@nestjs/common';
@@ -6,7 +8,7 @@ import { VoucherController } from './voucher.controller';
 import { DatabaseModule } from 'src/config/database/database.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, UsersModule],
   controllers: [VoucherController],
   providers: [VoucherService, VoucherRepository, ...voucherProvider],
   exports: [VoucherService, VoucherRepository],

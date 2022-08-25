@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { ItemsModule } from './../items/items.module';
 import { Image } from './entities/image.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +10,7 @@ import { DatabaseModule } from 'src/config/database/database.module';
 import { ImageRepository } from './images.repository';
 
 @Module({
-  imports: [DatabaseModule, ItemsModule,
+  imports: [DatabaseModule, ItemsModule, UsersModule
 
     // forwardRef(() => ItemsModule)
   ],

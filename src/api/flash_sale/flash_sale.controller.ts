@@ -8,11 +8,17 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { FlashSaleService } from './flash_sale.service';
 import { CreateFlashSaleDto } from './dto/create-flash_sale.dto';
 import { UpdateFlashSaleDto } from './dto/update-flash_sale.dto';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/share/auth/guards/role.guard';
+import { AppObject } from 'src/share/common/app.object';
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { filterDto } from '../category/dto/filter.dto';
 
 @ApiTags('flash sale')
 @Controller('flash-sale')
@@ -23,6 +29,10 @@ export class FlashSaleController {
     type: FlashSale,
     description: 'List Flash sale'
   })
+  @ApiQuery({
+    required: false,
+    type: filterDto,
+  })
   @Get()
   findAll(@Query() query) {
     return this.flashSaleService.findAll(query);
@@ -32,18 +42,23 @@ export class FlashSaleController {
     type: FlashSale,
     description: 'Information Flash sale'
   })
+  @ApiParam({ name: 'id', type: 'string' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.flashSaleService.findOne(+id);
   }
 
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     type: FlashSale,
     description: 'Create a new flash sale successfully',
   })
   @ApiBadRequestResponse({
     description: 'Flash sale cannot create. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
+  // @FormDataRequest()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   create(@Body() createFlashSaleDto: CreateFlashSaleDto) {
     return this.flashSaleService.create(createFlashSaleDto);
@@ -56,6 +71,10 @@ export class FlashSaleController {
   @ApiBadRequestResponse({
     description: 'Flash sale cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -70,6 +89,9 @@ export class FlashSaleController {
   @ApiBadRequestResponse({
     description: 'Category cannot delete. Try again!',
   })
+  @ApiParam({ name: 'id', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.flashSaleService.remove(+id);

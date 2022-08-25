@@ -9,8 +9,8 @@ import { SendmailService } from './sendmail.service';
     transport: {
       host: 'smtp.sendgrid.net',
       auth: {
-        user: 'apikey',
-        pass: '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',
+        user: process.env.SEND_MAIL_USER,
+        pass: process.env.SENDGRID_API_KEY,
       }
     }
   }),],

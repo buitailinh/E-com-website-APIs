@@ -19,6 +19,5 @@
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    // "releaseDecoratorMetadata": true,
   }
 }

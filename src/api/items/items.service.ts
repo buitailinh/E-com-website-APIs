@@ -1,10 +1,14 @@
+import { AppObject } from 'src/share/common/app.object';
+import { async } from 'rxjs';
+import { AppKey } from './../../share/common/app.key';
+import { OrderDetail } from './../order_detail/entities/order_detail.entity';
+import { query } from 'express';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AppKey } from 'src/share/common/app.key';
-import { Like } from 'typeorm';
+import { Between, Like, ObjectID } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
@@ -27,16 +31,20 @@ export class ItemsService {
     const page = query.page || 1;
     const skip = (page - 1) * take;
     const keyword = query.keywork || '';
-
+    const totalmin = query.totalmin || 0;
+    const totalmax = query.totalmax || +10E+10;
     const data = await this.itemRepository.findAndOptions({
-      where: { nameItem: Like('%' + keyword + '%') },
+      where: {
+        nameItem: Like('%' + keyword + '%'),
+        total: Between(totalmin, totalmax),
+      },
       order: {
         nameItem: query.order === 'descend' ? 'DESC' : 'ASC',
       },
+
       take: take,
       skip: skip,
     });
-
     return await this.itemRepository.paginateResponse(data, page, take);
   }
 
@@ -103,6 +111,8 @@ export class ItemsService {
         message: AppKey.ERROR_MESSAGE.ITEM.ERR_BARCODE_EXIST,
       });
     const category = await this.categoryService.getById(categoryId);
+    category.amount += category.amount;
+    await this.categoryService.categoryRepository.save(category);
     if (priceEX < priceIM)
       throw new NotFoundException({
         message: AppKey.ERROR_MESSAGE.ITEM.ERR_PRICE,
@@ -174,11 +184,39 @@ export class ItemsService {
     return await this.itemRepository.save(item);
   }
 
+  async getItemForOrder(id: number) {
+    const query = await getConnection()
+      .createQueryBuilder()
+      .select('item')
+      .addSelect('order_detail')
+      .addSelect('order')
+      .from(Item, 'item')
+      .leftJoin('item.order_details', 'order_detail')
+      .leftJoin('order_detail.order', 'order')
+      .where('item.id = :id', { id })
+      .andWhere('order_detail.itemId= :id', { id })
+      .andWhere('order.status = :status', { status: AppObject.ORDER.STATUS.WFC })
+      .execute();
+
+    return query[0];
+  }
+
   async remove(id: number) {
+    const result = await this.getItemForOrder(id);
+    console.log(result);
+
+    if (result) {
+      throw new NotFoundException('Item in the process of selling');
+    }
+    const category = await this.categoryService.getById(result.item_categoryId);
+    category.amount -= category.amount;
+    await this.categoryService.categoryRepository.save(category);
     await this.removeFile(id);
     await this.itemRepository.delete(id);
     return { message: `This action removes a #${id} item` };
   }
+
+
   async removeFile(id: number) {
     const item = await this.getById(id);
 
@@ -204,25 +242,6 @@ export class ItemsService {
     return item;
   }
 
-  async updateIsSaleTrue(id: number) {
-    const item = await this.getById(id);
-    if (!item.is_sale) {
-      await this.itemRepository.save({
-        ...item,
-        is_sale: true,
-      });
-    }
-  }
-
-  async updateIsSaleFalse(id: number) {
-    const item = await this.getById(id);
-    if (item.is_sale) {
-      await this.itemRepository.save({
-        ...item,
-        is_sale: false,
-      });
-    }
-  }
 
   async getItemWithFS(id: number) {
     const timeNow = new Date();
@@ -246,4 +265,33 @@ export class ItemsService {
 
     return query[0];
   }
+
+
+  async updateIsSaleTrue(id: number) {
+    const item = await this.getById(id);
+    if (!item.is_sale) {
+      await this.itemRepository.save({
+        ...item,
+        is_sale: true,
+      });
+    }
+  }
+
+  async updateIsSaleFalse(id: number) {
+    const item = await this.getById(id);
+    if (item.is_sale) {
+      await this.itemRepository.save({
+        ...item,
+        is_sale: false,
+        total: item.priceEX * (100 - item.sale) / 100,
+      });
+    }
+  }
+
+  async exportData1() {
+    console.log('exportData');
+    return { message: 'daata' };
+
+  }
+
 }

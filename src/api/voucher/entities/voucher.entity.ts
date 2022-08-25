@@ -1,7 +1,9 @@
+import { Order } from './../../order/entities/order.entity';
 import { Column, Entity, OneToMany } from "typeorm";
 import { BaseEntity } from './../../../share/database/BaseEntity';
 import { VOUCHER_CONST } from "../voucher.constant";
-import { Order } from "src/api/order/entities/order.entity";
+
+
 
 @Entity({ name: VOUCHER_CONST.MODEL_NAME })
 export class Voucher extends BaseEntity {

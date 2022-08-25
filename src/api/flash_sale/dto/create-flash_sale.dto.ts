@@ -1,3 +1,4 @@
+import { ItemFlashsale } from './../../item_flashsale/entities/item_flashsale.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -28,7 +29,8 @@ export class Item_FlashSale {
         required: true,
         type: 'int',
         description: 'quantity of item',
-        example: '1'
+        example: '1',
+        minimum: 0,
     })
     @IsNotEmpty({ message: 'Id item is not empty', })
     @IsNumber()
@@ -36,7 +38,14 @@ export class Item_FlashSale {
     @Min(0)
     quantity: number;
 
-    @ApiProperty({ type: 'int' })
+    @ApiProperty({
+        type: 'int',
+        required: true,
+        description: 'sale of item',
+        example: '1',
+        minimum: 0,
+        maximum: 100,
+    })
     @IsNotEmpty({ message: 'sale number' })
     @IsNumber()
     @Type(() => Number)
@@ -51,7 +60,8 @@ export class CreateFlashSaleDto {
         required: true,
         type: 'string',
         description: 'name sale ',
-        example: 'name sale'
+        example: 'name sale',
+        minLength: 2,
     })
     @IsNotEmpty({ message: 'Name flash is not empty', })
     @IsString()
@@ -92,11 +102,11 @@ export class CreateFlashSaleDto {
 
     @ApiProperty({
         required: true,
-        type: 'array',
+        type: [Item_FlashSale],
+        // name: 'itemFlashsale',
         description: 'Array of item flash sale',
-        example: '[itemId: 1,quantity: 1, sale:1]'
+        // example: '[{"itemId": 1,"quantity": 1, "sale":1}]'
     })
     @IsArray()
-    @ApiProperty({ type: [Item_FlashSale] })
-    itemFlashSale: Item_FlashSale[];
+    itemFlashSale?: Item_FlashSale[];
 }

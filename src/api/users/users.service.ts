@@ -1,5 +1,4 @@
-import { confirmEmailLink } from './../../share/utils/utils/confirmEmailLink';
-import { sendEmail } from './../../share/utils/utils/sendEmail';
+import { RoleUserDto } from './dto/role-user.dto';
 import { AppObject } from 'src/share/common/app.object';
 import { AppKey } from './../../share/common/app.key';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
@@ -14,7 +13,8 @@ import * as fs from 'fs';
 @Injectable()
 export class UsersService {
   constructor(public userRepository: UserRepository,) { };
-  async findAll(query) {
+
+  async findAll(query: any) {
     const take = query.take || process.env.TAKE_PAGE;
     const page = query.page || 1;
     const skip = (page - 1) * take;
@@ -109,10 +109,10 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: RoleUserDto) {
     const userFound = await this.findOne(id);
 
-    const { role, } = updateUserDto;
+    const { role } = updateUserDto;
     const user = {
       role,
       // isVerify: true,

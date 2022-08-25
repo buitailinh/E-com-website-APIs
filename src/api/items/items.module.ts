@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { CategoryModule } from './../category/category.module';
 
 import { itemProvider } from './items.provider';
@@ -6,14 +7,15 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 import { DatabaseModule } from 'src/config/database/database.module';
+import { ExportDataService } from './exportData.service';
 
 
 @Module({
-  imports: [DatabaseModule, CategoryModule,
+  imports: [DatabaseModule, CategoryModule, UsersModule
     // forwardRef(() => ImagesModule,)
   ],
   controllers: [ItemsController],
-  providers: [ItemsService, ItemRepository, ...itemProvider],
-  exports: [ItemsService, ItemRepository,]
+  providers: [ItemsService, ExportDataService, ItemRepository, ...itemProvider],
+  exports: [ItemsService, ExportDataService, ItemRepository,]
 })
 export class ItemsModule { }

@@ -3,7 +3,8 @@ import { BaseEntity } from './../../../share/database/BaseEntity';
 import { USER_CONST } from './../users.constant';
 import { Column, Entity, OneToMany } from "typeorm";
 import { Exclude, Transform, Type } from 'class-transformer';
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from './../../../share/common/app.object';
+
 
 @Entity({ name: USER_CONST.MODEL_NAME })
 export class User extends BaseEntity {

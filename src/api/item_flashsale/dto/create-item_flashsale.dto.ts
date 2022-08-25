@@ -8,6 +8,8 @@ export class CreateItemFlashsaleDto {
         required: true,
         description: 'number sale ',
         example: '50',
+        minimum: 0,
+        maximum: 100,
     })
     @IsNotEmpty({ message: 'sale number is not empty' })
     @IsNumber()
@@ -20,7 +22,8 @@ export class CreateItemFlashsaleDto {
         required: true,
         description: 'quantity of items sale',
         example: '100',
-        type: 'int'
+        type: 'int',
+        minimum: 0,
     })
     @IsNotEmpty({ message: 'quantity item sale number is not empty' })
     @IsNumber()

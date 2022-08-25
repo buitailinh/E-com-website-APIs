@@ -1,4 +1,4 @@
-import { CATEGORY_CONST } from './../../api/category/category.constant';
+
 export class AppKey {
   static readonly TABLES = {
     /* PLOP_INJECT_TABLE */

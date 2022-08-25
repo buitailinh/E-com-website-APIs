@@ -5,7 +5,12 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { multerOptions } from './category.constant';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/share/auth/guards/role.guard';
+import { AppObject } from 'src/share/common/app.object';
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { filterDto } from './dto/filter.dto';
 
 @ApiTags('Category')
 @Controller('category')
@@ -16,8 +21,13 @@ export class CategoryController {
     type: Category,
     description: 'List category'
   })
+  @ApiQuery({
+    required: false,
+    type: filterDto,
+  })
   @Get()
   findAll(@Query() query) {
+    console.log(query);
     return this.categoryService.findAll(query);
   }
 
@@ -40,10 +50,12 @@ export class CategoryController {
     description: 'Category cannot create. Try again!',
   })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  create(@UploadedFile() image, @Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto, image?.filename);
+  create(@Body() createCategoryDto: CreateCategoryDto, @UploadedFile() file) {
+    return this.categoryService.create(createCategoryDto, file?.filename);
   }
 
   // @UseGuards(JwtGuard)
@@ -57,6 +69,7 @@ export class CategoryController {
 
   @ApiOkResponse({ description: 'see file image' })
   @ApiBadRequestResponse({ description: 'not found' })
+  @ApiParam({ name: 'image', description: 'file image ', required: true })
   @Get('/images/:image')
   seeFile(@Param('image') image, @Res() res) {
     return res.sendFile(image, { root: './images/Category' });
@@ -71,10 +84,16 @@ export class CategoryController {
     description: 'Category cannot update. Try again!',
   })
   @ApiConsumes('multipart/form-data')
-  @Patch(':id')
+  @ApiParam({ name: 'id' })
+  @ApiBody({
+    type: UpdateCategoryDto,
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  @Patch(':id')   //
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  update(@Param('id') id: number, @UploadedFile() image, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoryService.update(+id, updateCategoryDto, image?.filename);
+  update(@Param('id') id: string, @UploadedFile() image, @Body() updateCategoryDto: UpdateCategoryDto) {   // , 
+    return this.categoryService.update(+id, updateCategoryDto, image?.filename);   // 
   }
 
   @ApiOkResponse({
@@ -85,9 +104,22 @@ export class CategoryController {
     description: 'Category cannot update image. Try again!',
   })
   @ApiConsumes('multipart/form-data')
-  @Patch(':id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  @Patch('/image/:id')
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  updateImage(@Param('id') id: number, @UploadedFile() image,) {
+  updateImage(@Param('id') id: number, @UploadedFile('file') image,) {
     return this.categoryService.updateImage(+id, image?.filename);
   }
 
@@ -98,6 +130,8 @@ export class CategoryController {
     description: 'Category cannot delete. Try again!',
   })
   @ApiParam({ name: 'id' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
 
@@ -112,6 +146,8 @@ export class CategoryController {
     description: 'Category cannot delete image. Try again!',
   })
   @ApiParam({ name: 'id' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete('/image/:id')
   removeFile(@Param('id') id: string) {
     return this.categoryService.removeFile(+id);

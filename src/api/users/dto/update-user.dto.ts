@@ -7,17 +7,7 @@ import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto {
     @ApiProperty({ required: false, description: 'input a fullname ' })
-    @IsNotEmpty({ message: "Fullname is not empty" })
-    @Matches(PatternLib.name, { message: 'Invalid  fullname format' })
-    @IsString()
-    @MinLength(2, {
-        message: ' fullname must be should 2',
-    })
-    fullname: string;
-
-    @ApiProperty({ required: false, description: 'input a ' })
-    @IsEnum(AppObject.USER_MODULE.ROLE)
-    role: string = AppObject.USER_MODULE.ROLE.CLIENT;
+    fullname?: string;
 
     @ApiProperty({ required: false, description: 'input a phone number' })
     @IsNotEmpty({ message: "phone number is not empty" })
@@ -28,12 +18,18 @@ export class UpdateUserDto {
     @IsNotEmpty({ message: "address is not empty" })
     address: string;
 
-    @ApiProperty({ required: false, description: 'input a address' })
+    @ApiProperty({ required: false, description: 'input a address', type: 'datetime' })
     // @Transform(brithday => moment(brithday).format('DD/MM/YY'))
     @Type(() => Date)
     @IsDate()
-    brithday: Date = new Date('12/12/2001');
+    brithday: Date = new Date();
 
-    @ApiProperty({ required: false, description: 'input a file picture' })
-    avatar: string = null;
+    @ApiProperty({
+        required: false,
+        description: 'file image avatar user ',
+        // example: 'a.jpg',
+        type: 'string',
+        format: 'binary',
+    })
+    file?: string;
 }

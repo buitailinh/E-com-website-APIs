@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { FlashSaleModule } from './../flash_sale/flash_sale.module';
 import { item_flashsaleProvider } from './item_flashsale.provider';
 import { ItemFlashsaleRepository } from './item_flashsale.repository';
@@ -8,7 +9,7 @@ import { ItemFlashsaleService } from './item_flashsale.service';
 import { ItemFlashsaleController } from './item_flashsale.controller';
 
 @Module({
-  imports: [DatabaseModule, ItemsModule],
+  imports: [DatabaseModule, ItemsModule, UsersModule],
   controllers: [ItemFlashsaleController],
   providers: [
     ItemFlashsaleService,

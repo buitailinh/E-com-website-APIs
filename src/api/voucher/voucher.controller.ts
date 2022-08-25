@@ -1,10 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { RolesGuard } from './../../share/auth/guards/role.guard';
+import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { VoucherService } from './voucher.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
-import { ApiBadRequestResponse, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Voucher } from './entities/voucher.entity';
+import { AppObject } from 'src/share/common/app.object';
+import { filterDto } from '../category/dto/filter.dto';
 
+@ApiTags('Voucher')
 @Controller('voucher')
 export class VoucherController {
   constructor(private readonly voucherService: VoucherService) { }
@@ -13,6 +19,10 @@ export class VoucherController {
   @ApiOkResponse({
     type: Voucher,
     description: 'List voucher'
+  })
+  @ApiQuery({
+    required: false,
+    type: filterDto,
   })
   @Get()
   findAll(@Query() query) {
@@ -30,13 +40,16 @@ export class VoucherController {
   }
 
 
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     type: Voucher,
     description: 'Create a new Voucher successfully',
   })
   @ApiBadRequestResponse({
     description: 'Voucher cannot create. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   create(@Body() createVoucherDto: CreateVoucherDto) {
     return this.voucherService.create(createVoucherDto);
@@ -49,7 +62,10 @@ export class VoucherController {
   @ApiBadRequestResponse({
     description: 'Voucher cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateVourchDto: UpdateVoucherDto) {
     return this.voucherService.update(+id, updateVourchDto);
@@ -62,6 +78,8 @@ export class VoucherController {
     description: 'Voucher cannot delete. Try again!',
   })
   @ApiParam({ name: 'id' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.voucherService.remove(+id);

@@ -1,6 +1,6 @@
 import { Voucher } from './../../voucher/entities/voucher.entity';
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsString, Length, Min } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class Item_OrderDetail {
@@ -21,10 +21,12 @@ export class Item_OrderDetail {
         description: 'Quantity item order ',
         example: '2',
         type: 'int',
+        minimum: 0,
     })
     @IsNotEmpty({ message: 'Quantity item order is not empty', })
     @IsNumber()
     @Type(() => Number)
+    @Min(0, { message: 'Quantity must be greater than 0' })
     quantity: number;
 
 }
@@ -46,13 +48,14 @@ export class CreateOrderDto {
         type: 'string',
     })
     @IsString()
+    @Length(8)
     codeVoucher?: string = '';
 
     @ApiProperty({
-        required: false,
+        required: true,
         description: 'order detail item order ',
-        example: '[order_detail]',
-        type: 'array',
+        // example: '[order_detail]',
+        type: [Item_OrderDetail],
     })
     @IsArray()
     order_Details?: Item_OrderDetail[];

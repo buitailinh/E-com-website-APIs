@@ -10,7 +10,8 @@ export class CreateItemDto {
         required: true,
         description: 'Name item is not empty',
         example: 'name item',
-        type: 'string'
+        type: 'string',
+        minLength: 3,
     })
     @IsNotEmpty({ message: "Name item not empty" })
     @IsString()
@@ -21,7 +22,8 @@ export class CreateItemDto {
         required: true,
         description: 'barcode just the only one',
         example: 'name item',
-        type: 'string'
+        type: 'string',
+        minLength: 8,
     })
     @IsNotEmpty({ message: "Barcode item not empty" })
     @IsString()
@@ -34,6 +36,7 @@ export class CreateItemDto {
         description: 'Price imput',
         example: '10.000',
         type: 'int',
+        minimum: 0,
     })
     @Type(() => Number)
     @IsNumber()
@@ -46,20 +49,21 @@ export class CreateItemDto {
         description: 'Price export',
         example: '15.000',
         type: 'int',
+        minimum: 0
     })
     @Type(() => Number)
     @IsNumber()
     @Min(0, { message: ' price must be greater than 0' })
     priceEX?: number;
 
-
     @ApiProperty({
         required: false,
-        description: 'file image of product',
-        example: 'name item',
+        description: 'file image main item ',
+        // example: 'a.jpg',
         type: 'string',
+        format: 'binary',
     })
-    imageMain?: string;
+    file?: string;
 
     @ApiProperty({
         required: false,
@@ -75,7 +79,9 @@ export class CreateItemDto {
         required: false,
         description: 'sale of product',
         example: '10',
-        type: 'int'
+        type: 'int',
+        minimum: 0,
+        maximum: 100,
     })
     @Min(0, { message: ' price sale must be greater than 0%' })
     @Max(100, { message: ' price sale must be less than 100%' })
@@ -89,6 +95,7 @@ export class CreateItemDto {
         description: 'Number of product',
         example: '10',
         type: 'int',
+        minimum: 0
     })
     @Type(() => Number)
     @IsNumber()

@@ -4,7 +4,8 @@ import { Category } from './../../category/entities/category.entity';
 import { IsNotEmpty, IsNumber, IsString, Length, Max, Min, MinLength, validate } from 'class-validator';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ITEM_CONST } from '../items.constant';
-import { Image } from 'src/api/images/entities/image.entity';
+import { Image } from './../../images/entities/image.entity';
+
 import { BaseEntity } from './../../../share/database/BaseEntity';
 @Entity({ name: ITEM_CONST.MODEL_NAME })
 export class Item extends BaseEntity {
@@ -19,6 +20,9 @@ export class Item extends BaseEntity {
 
     @Column()
     priceEX: number;
+
+    @Column()
+    total: number;
 
     @Column({ default: null })
     imageMain?: string;
@@ -45,9 +49,17 @@ export class Item extends BaseEntity {
     })
     images: Image[];
 
-    @OneToMany(() => ItemFlashsale, (itemFlashSale) => itemFlashSale.item)
+    @OneToMany(() => ItemFlashsale, (itemFlashSale) => itemFlashSale.item, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     itemFlashSales: ItemFlashsale[];
 
-    @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.item)
+    @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.item, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     order_details: OrderDetail[];
 }

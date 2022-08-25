@@ -104,11 +104,12 @@ export class FlashSaleService {
     const saleFound = await this.findOne(id);
     if (saleFound === null)
       throw new NotFoundException(`Not found sale id ${id}`);
-    await this.flashSaleRepository.delete(id);
     const itemFS = await this.itemFSService.itemFSRepository.findAndOptions({
       where: { flashSale: saleFound },
     })
     await this.itemFSService.itemFSRepository.delete(itemFS);
+
+    await this.flashSaleRepository.delete(id);
 
     return { message: `Sale removed successfully with id ${id}` };
   }

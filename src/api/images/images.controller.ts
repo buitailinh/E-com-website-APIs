@@ -1,12 +1,16 @@
 import { ItemsService } from './../items/items.service';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, Res, UseGuards } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './images.constant';
 import { Image } from './entities/image.entity'
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/share/auth/guards/role.guard';
+import { AppObject } from 'src/share/common/app.object';
 
 @ApiTags('Images')
 @Controller('images')
@@ -19,6 +23,9 @@ export class ImagesController {
     type: Image,
     description: 'List images  of items',
   })
+  @ApiQuery({})
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Get()
   findAll(@Query() query) {
     return this.imagesService.findAll(query);
@@ -32,6 +39,8 @@ export class ImagesController {
     description: 'Image not found',
   })
   @ApiParam({ name: 'id' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.imagesService.findOne(+id);
@@ -39,12 +48,13 @@ export class ImagesController {
 
   @ApiOkResponse({ description: 'see file image' })
   @ApiBadRequestResponse({ description: 'not found' })
+  @ApiParam({ name: 'image' })
   @Get('/images/:image')
   seeFile(@Param('image') image, @Res() res) {
     return res.sendFile(image, { root: './images/items' });
   }
 
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     type: Image,
     description: 'Create a new image object as response',
   })
@@ -53,17 +63,8 @@ export class ImagesController {
   })
   @ApiParam({ name: 'id' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Post(':id')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async create(@UploadedFile() image, @Body() createImageDto: CreateImageDto, @Param('id') id: string) {
@@ -78,6 +79,11 @@ export class ImagesController {
   @ApiBadRequestResponse({
     description: 'Image cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'idItem', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Patch(':id/:idItem')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async update(@Param('id') id: string, @Param('idItem') idItem: string, @Body() updateImageDto: UpdateImageDto, @UploadedFile() image) {
@@ -91,6 +97,9 @@ export class ImagesController {
   @ApiBadRequestResponse({
     description: 'Image cannot delete. Try again!',
   })
+  @ApiParam({ name: 'id', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.imagesService.remove(+id);

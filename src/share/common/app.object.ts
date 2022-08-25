@@ -83,6 +83,16 @@ export class AppObject {
     }
   };
 
+  public static readonly ORDER = {
+    STATUS: {
+      WFC: 'Wait for confirmation',
+      CONFIRM: 'Confirmed',
+      OD: 'On delivery',
+      DELIVERY: 'Delivery',
+      DFAILED: 'Delivery failed',
+    }
+  };
+
   static readonly CURRENCY = {
     SGD: 'SGD',
     MYR: 'MYR',

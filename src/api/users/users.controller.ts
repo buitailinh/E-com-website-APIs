@@ -1,3 +1,4 @@
+import { filterDto } from './../category/dto/filter.dto';
 import { User } from './entities/user.entity';
 import { RolesGuard } from './../../share/auth/guards/role.guard';
 import { AppObject } from './../../share/common/app.object';
@@ -9,8 +10,10 @@ import { multerOptions } from './users.constant';
 import { Roles } from 'src/share/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ApiBadRequestResponse, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { RoleUserDto } from './dto/role-user.dto';
 
+@ApiTags('Users')
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService,
@@ -24,14 +27,17 @@ export class UsersController {
     type: User,
     description: 'List user'
   })
-  @ApiQuery({})
-  findAll(@Query() query) {
+  @ApiQuery({
+    required: false,
+    type: filterDto,
+  })
+  findAll(@Query() query: any) {
     return this.usersService.findAll(query);
   }
 
   @Get('/id/:id')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
   @ApiOkResponse({
     type: User,
     description: 'information about user'
@@ -45,7 +51,7 @@ export class UsersController {
     type: User,
     description: 'information about user with email'
   })
-  @ApiParam({ name: 'email' })
+  @ApiParam({ name: 'email', type: 'string' })
   @Get('email/:email')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(AppObject.USER_MODULE.ROLE.ADMIN, AppObject.USER_MODULE.ROLE.PRO)
@@ -73,6 +79,7 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'User cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @Patch('update')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', multerOptions))
@@ -88,12 +95,13 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'User cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id' })
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(AppObject.USER_MODULE.ROLE.PRO)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() role: RoleUserDto) {
+    return this.usersService.update(+id, role);
   }
 
   @ApiOkResponse({

@@ -17,8 +17,8 @@ import { OrderDetailModule } from './api/order_detail/order_detail.module';
 import { OrderModule } from './api/order/order.module';
 import { SendmailModule } from './share/sendmail/sendmail.module';
 import { OtpModule } from './share/otp/otp.module';
-import { CronjobModule } from './share/cornjob/cronjob.module';
-import { CronjobService } from './share/cornjob/cronjob.service';
+import { CronjobModule } from './share/cronjob/cronjob.module';
+import { CronjobService } from './share/cronjob/cronjob.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({

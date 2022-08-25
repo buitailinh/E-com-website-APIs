@@ -2,8 +2,6 @@ import { FlashSale } from './../../api/flash_sale/entities/flash_sale.entity';
 import { UsersService } from 'src/api/users/users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { CreateSendmailDto } from './dto/create-sendmail.dto';
-import { UpdateSendmailDto } from './dto/update-sendmail.dto';
 
 @Injectable()
 export class SendmailService {

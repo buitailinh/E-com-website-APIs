@@ -11,7 +11,7 @@ export class ForgetPassword {
     })
     email: string;
 
-    @ApiProperty({ required: true, description: ' password' })
+    @ApiProperty({ type: 'string', required: true, description: ' password', minimum: 8, maximum: 30 })
     @IsNotEmpty({ message: "Password is not empty" })
     @Matches(PatternLib.password, { message: 'Invalid password format' })
     @Length(8, 30, { message: 'Min lenght must be 8' })
@@ -19,7 +19,7 @@ export class ForgetPassword {
     newPassword: string;
 
 
-    @ApiProperty({ required: true, description: 'OTP key' })
+    @ApiProperty({ type: 'string', required: true, description: 'OTP key' })
     @IsNotEmpty({ message: "OTP is not empty" })
     @IsString()
     OTP: string;

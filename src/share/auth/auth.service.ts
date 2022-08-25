@@ -3,7 +3,6 @@ import { async } from 'rxjs';
 import { JwtPayload } from './jwt-payload.interface';
 import { SignDto } from './dto/signIn.dto';
 import { SendmailService } from './../sendmail/sendmail.service';
-import { sendEmail } from './../utils/utils/sendEmail';
 import { AppKey } from './../common/app.key';
 import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';

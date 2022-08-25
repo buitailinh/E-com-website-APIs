@@ -1,10 +1,14 @@
+import { Roles } from 'src/share/decorator/roles.decorator';
+import { RolesGuard } from './../../share/auth/guards/role.guard';
+import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
 import { Item_FlashSale } from './../flash_sale/dto/create-flash_sale.dto';
 import { FlashSaleService } from './../flash_sale/flash_sale.service';
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards } from '@nestjs/common';
 import { ItemFlashsaleService } from './item_flashsale.service';
 import { CreateItemFlashsaleDto } from './dto/create-item_flashsale.dto';
 import { UpdateItemFlashsaleDto } from './dto/update-item_flashsale.dto';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { AppObject } from 'src/share/common/app.object';
 
 @ApiTags('Item flash sale')
 @Controller('item-flashsale')
@@ -16,6 +20,8 @@ export class ItemFlashsaleController {
     type: Item_FlashSale,
     description: 'List item flash sale',
   })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Get()
   findAll() {
     return this.itemFlashsaleService.findAll();
@@ -25,6 +31,7 @@ export class ItemFlashsaleController {
     type: Item_FlashSale,
     description: 'Information item flash sale',
   })
+  @ApiParam({ name: 'id', type: 'string' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemFlashsaleService.findOne(+id);
@@ -44,6 +51,10 @@ export class ItemFlashsaleController {
   @ApiBadRequestResponse({
     description: 'Item flash sale cannot update. Try again!',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemFlashsaleDto: UpdateItemFlashsaleDto) {
     return this.itemFlashsaleService.update(+id, updateItemFlashsaleDto);
@@ -55,6 +66,9 @@ export class ItemFlashsaleController {
   @ApiBadRequestResponse({
     description: 'Item flash sale cannot delete. Try again!',
   })
+  @ApiParam({ name: 'id', type: 'string' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.itemFlashsaleService.remove(+id);
