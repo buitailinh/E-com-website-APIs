@@ -1,5 +1,5 @@
 import { FlashSale } from './../../api/flash_sale/entities/flash_sale.entity';
-import { UsersService } from 'src/api/users/users.service';
+import { UsersService } from './../../api/users/users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 

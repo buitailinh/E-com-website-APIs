@@ -6,10 +6,10 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { multerOptions } from './category.constant';
 import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/share/auth/guards/role.guard';
-import { AppObject } from 'src/share/common/app.object';
-import { Roles } from 'src/share/decorator/roles.decorator';
+import { JwtAuthGuard } from '../../share/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../share/auth/guards/role.guard';
+import { AppObject } from '../../share/common/app.object';
+import { Roles } from '../../share/decorator/roles.decorator';
 import { filterDto } from './dto/filter.dto';
 
 @ApiTags('Category')

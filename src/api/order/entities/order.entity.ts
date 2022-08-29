@@ -1,4 +1,4 @@
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from '../../../share/common/app.object';
 import { BaseEntity } from './../../../share/database/BaseEntity';
 import { OrderDetail } from './../../order_detail/entities/order_detail.entity';
 import { User } from './../../users/entities/user.entity';

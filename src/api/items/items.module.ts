@@ -6,7 +6,7 @@ import { ItemRepository } from './items.repository';
 import { forwardRef, Module } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
-import { DatabaseModule } from 'src/config/database/database.module';
+import { DatabaseModule } from '../../config/database/database.module';
 import { ExportDataService } from './exportData.service';
 
 

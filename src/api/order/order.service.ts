@@ -1,5 +1,5 @@
 import { StatusDto } from './dto/status-order.dto';
-import { AppKey } from 'src/share/common/app.key';
+import { AppKey } from '../../share/common/app.key';
 import { async } from 'rxjs';
 import { query } from 'express';
 import { User } from './../users/entities/user.entity';

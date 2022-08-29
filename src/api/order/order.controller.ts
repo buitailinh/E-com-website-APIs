@@ -1,7 +1,7 @@
 import { StatusDto } from './dto/status-order.dto';
 import { RolesGuard } from './../../share/auth/guards/role.guard';
-import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
-import { Roles } from 'src/share/decorator/roles.decorator';
+import { JwtAuthGuard } from './../../share/auth/guards/jwt-auth.guard';
+import { Roles } from './../../share/decorator/roles.decorator';
 import { Order } from './entities/order.entity';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { OrderService } from './order.service';
@@ -9,7 +9,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UsersService } from '../users/users.service';
 import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from './../../share/common/app.object';
 
 @ApiTags('Order')
 @Controller('order')

@@ -2,8 +2,8 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString, Length, Matches, MinLength } from "class-validator";
 import moment from "moment";
-import { AppObject } from "src/share/common/app.object";
-import { PatternLib } from "src/share/utils/pattern.lib";
+import { AppObject } from "../../../share/common/app.object";
+import { PatternLib } from "../../../share/utils/pattern.lib";
 
 export class CreateUserDto {
     @ApiProperty({ type: 'string', required: true, description: ' email address', example: 'example@example.com' })

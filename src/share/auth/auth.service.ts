@@ -7,11 +7,11 @@ import { AppKey } from './../common/app.key';
 import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/api/users/users.service';
-import { CreateUserDto } from 'src/api/users/dto/create-user.dto';
+import { UsersService } from './../../api/users/users.service';
+import { CreateUserDto } from './../../api/users/dto/create-user.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
-import { UserRepository } from 'src/api/users/users.repository';
+import { UserRepository } from './../../api/users/users.repository';
 import { OtpService } from '../otp/otp.service';
 @Injectable()
 export class AuthService {

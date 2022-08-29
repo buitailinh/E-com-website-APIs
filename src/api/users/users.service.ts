@@ -1,5 +1,5 @@
 import { RoleUserDto } from './dto/role-user.dto';
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from '../../share/common/app.object';
 import { AppKey } from './../../share/common/app.key';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Like, ObjectID } from 'typeorm';

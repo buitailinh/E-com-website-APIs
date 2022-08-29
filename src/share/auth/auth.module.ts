@@ -1,4 +1,4 @@
-import { DatabaseModule } from 'src/config/database/database.module';
+import { DatabaseModule } from '../../config/database/database.module';
 import { OtpModule } from './../otp/otp.module';
 import { ConfigModule } from '@nestjs/config';
 import { jwtConfig } from './../../config/jwt.config';
@@ -9,8 +9,8 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JWT_CONFIG } from 'src/config/constant.config';
-import { UsersModule } from 'src/api/users/users.module';
+import { JWT_CONFIG } from '../../config/constant.config';
+import { UsersModule } from './../../api/users/users.module';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { SendmailModule } from '../sendmail/sendmail.module';
 

@@ -1,6 +1,6 @@
 import { Voucher } from './entities/voucher.entity';
 import { Inject, Injectable } from "@nestjs/common";
-import { TypeOrmRepository } from "src/share/database/typeorm.repository";
+import { TypeOrmRepository } from "./../../share/database/typeorm.repository";
 import { VOUCHER_CONST } from './voucher.constant';
 import { Repository } from 'typeorm';
 

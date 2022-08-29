@@ -1,6 +1,6 @@
-import { Roles } from 'src/share/decorator/roles.decorator';
+import { Roles } from '../../share/decorator/roles.decorator';
 import { RolesGuard } from './../../share/auth/guards/role.guard';
-import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../share/auth/guards/jwt-auth.guard';
 import { OrderDetail } from './entities/order_detail.entity';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { OrderDetailService } from './order_detail.service';
@@ -8,7 +8,7 @@ import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order_detail.dto';
 import { OrderService } from '../order/order.service';
 import { ApiBadRequestResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from './../../share/common/app.object';
 
 @ApiTags('Order detail')
 @Controller('order-detail')

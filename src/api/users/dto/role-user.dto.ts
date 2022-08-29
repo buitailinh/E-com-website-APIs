@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsString } from "class-validator";
-import { AppObject } from "src/share/common/app.object";
+import { AppObject } from "../../../share/common/app.object";
 
 export class RoleUserDto {
 

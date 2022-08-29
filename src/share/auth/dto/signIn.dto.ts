@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString, Length, Matches } from "class-validator";
-import { PatternLib } from "src/share/utils/pattern.lib";
+import { PatternLib } from "./../../utils/pattern.lib";
 
 export class SignDto {
     @ApiProperty({ type: 'string', required: true, description: ' email address' })

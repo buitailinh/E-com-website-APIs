@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString, Length, Matches, MinLength } from "class-validator";
-import { PatternLib } from "src/share/utils/pattern.lib";
+import { PatternLib } from "./../../utils/pattern.lib";
 
 export class ForgetPassword {
     @ApiProperty({ type: 'string', required: true, description: 'email address' })

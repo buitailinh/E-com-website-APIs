@@ -5,8 +5,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards, 
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from 'src/config/multer.config';
-import { CreateUserDto } from 'src/api/users/dto/create-user.dto';
+import { multerOptions } from '../../config/multer.config';
+import { CreateUserDto } from './../../api/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { SignDto } from './dto/signIn.dto';

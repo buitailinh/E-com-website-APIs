@@ -7,10 +7,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './images.constant';
 import { Image } from './entities/image.entity'
 import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/share/decorator/roles.decorator';
-import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/share/auth/guards/role.guard';
-import { AppObject } from 'src/share/common/app.object';
+import { Roles } from '../../share/decorator/roles.decorator';
+import { JwtAuthGuard } from '../../share/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../share/auth/guards/role.guard';
+import { AppObject } from '../../share/common/app.object';
 
 @ApiTags('Images')
 @Controller('images')

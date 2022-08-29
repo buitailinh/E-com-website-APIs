@@ -2,7 +2,7 @@ import { AppObject } from '../../common/app.object';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { UsersService } from 'src/api/users/users.service';
+import { UsersService } from '../../../api/users/users.service';
 
 
 @Injectable()

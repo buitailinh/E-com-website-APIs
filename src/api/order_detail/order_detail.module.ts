@@ -6,7 +6,7 @@ import { ItemsModule } from './../items/items.module';
 import { Module } from '@nestjs/common';
 import { OrderDetailService } from './order_detail.service';
 import { OrderDetailController } from './order_detail.controller';
-import { DatabaseModule } from 'src/config/database/database.module';
+import { DatabaseModule } from '../../config/database/database.module';
 
 @Module({
   imports: [DatabaseModule, ItemsModule, ItemFlashsaleModule, UsersModule],

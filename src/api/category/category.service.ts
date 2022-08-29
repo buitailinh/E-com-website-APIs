@@ -41,7 +41,7 @@ export class CategoryService {
       where: { id, },
       relations: ['items']
     });
-    if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
+    if (!category) throw new NotFoundException(AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST);
 
     return category;
   }
@@ -50,7 +50,8 @@ export class CategoryService {
     const category = await this.categoryRepository.findOneByCondition({
       where: {
         nameCategory,
-      }
+      },
+      // relations: ['items']
     });
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
 
@@ -63,7 +64,7 @@ export class CategoryService {
     const category = await this.categoryRepository.findOneByCondition({
       where: { nameCategory }
     });
-    if (category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_EXIST });
+    if (category) throw new NotFoundException(AppKey.ERROR_MESSAGE.CATEGORY.ERR_EXIST);
     const categoryNew = {
       nameCategory,
       banner: file,

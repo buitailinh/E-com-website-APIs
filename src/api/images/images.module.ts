@@ -6,7 +6,7 @@ import { imageProvider } from './images.provider';
 import { forwardRef, Module } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { ImagesController } from './images.controller';
-import { DatabaseModule } from 'src/config/database/database.module';
+import { DatabaseModule } from '../../config/database/database.module';
 import { ImageRepository } from './images.repository';
 
 @Module({

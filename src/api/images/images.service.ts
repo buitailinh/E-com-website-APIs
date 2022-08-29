@@ -1,3 +1,4 @@
+import { AppKey } from '../../share/common/app.key';
 import { Item } from './../items/entities/item.entity';
 import { query } from 'express';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -6,7 +7,7 @@ import { UpdateImageDto } from './dto/update-image.dto';
 import { ImageRepository } from './images.repository';
 import { Like } from 'typeorm';
 import { Image } from './entities/image.entity'
-import { AppKey } from 'src/share/common/app.key';
+AppKey
 import * as  fs from 'fs';
 
 @Injectable()

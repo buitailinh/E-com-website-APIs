@@ -7,9 +7,8 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './users.constant';
-import { Roles } from 'src/share/decorator/roles.decorator';
-import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Roles } from './../../share/decorator/roles.decorator';
+import { JwtAuthGuard } from './../../share/auth/guards/jwt-auth.guard';
 import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { RoleUserDto } from './dto/role-user.dto';
 
@@ -17,7 +16,6 @@ import { RoleUserDto } from './dto/role-user.dto';
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-    private mailerServicce: MailerService,
   ) { }
 
   @Get()
@@ -119,16 +117,4 @@ export class UsersController {
     return this.usersService.remove(query.id);
   }
 
-  // @Get('email/:email')
-  // async getemail(@Param('email') email: string) {
-  //   console.log(email)
-  //   await this.mailerServicce.sendMail({
-  //     to: email,
-  //     from: 'linhbuitai@gmail.com',
-  //     subject: 'Email',
-  //     text: 'welcome to nestjs email demo',
-  //   });
-
-  //   return 'success';
-  // }
 }

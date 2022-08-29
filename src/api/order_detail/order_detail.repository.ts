@@ -1,6 +1,6 @@
 import { ORDER_DETAIL_CONST } from './order_detail.constant';
 import { Inject, Injectable } from "@nestjs/common";
-import { TypeOrmRepository } from "src/share/database/typeorm.repository";
+import { TypeOrmRepository } from "../../share/database/typeorm.repository";
 import { OrderDetail } from "./entities/order_detail.entity";
 import { Repository } from 'typeorm';
 

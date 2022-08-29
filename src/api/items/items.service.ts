@@ -1,4 +1,4 @@
-import { AppObject } from 'src/share/common/app.object';
+import { AppObject } from './../../share/common/app.object';
 import { async } from 'rxjs';
 import { AppKey } from './../../share/common/app.key';
 import { OrderDetail } from './../order_detail/entities/order_detail.entity';
