@@ -36,10 +36,11 @@ export class AuthController {
 
   @ApiOkResponse({ description: 'Sign in successfully' })
   @ApiBadRequestResponse({ description: 'Sign in failed' })
-  @UseGuards(LocalAuthGuard)
   @ApiConsumes('multipart/form-data')
+  // @UseGuards(LocalAuthGuard)
   @Post('signin')
   async signin(@Body() signin: SignDto) {
+    console.log(signin);
     return this.authService.signIn(signin);
   }
 

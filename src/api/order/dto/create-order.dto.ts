@@ -48,7 +48,7 @@ export class CreateOrderDto {
         type: 'string',
     })
     @IsString()
-    @Length(8)
+    // @Length(8)
     codeVoucher?: string = '';
 
     @ApiProperty({

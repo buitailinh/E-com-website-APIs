@@ -118,7 +118,9 @@ export class UsersService {
       // isVerify: true,
     }
     const userUpdate = Object.assign(userFound, user);
-    await this.userRepository.update(id, userUpdate);
+
+    await this.userRepository.save(userUpdate);
+
 
     return { message: `Update successfully id ${id}` }
   }

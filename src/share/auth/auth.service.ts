@@ -202,17 +202,18 @@ export class AuthService {
       }
     });
     if (!userFound) {
-      const userdate = {
+      const userdata = {
         email: user.email,
         fullname: user.name,
       }
 
-      const userNew = await this.userRepository.create(userdate);
+      const userNew = await this.userRepository.create(userdata);
+      await this.userService.verifyEmail(userNew.email);
       const token = await this.generateToken(userNew);
       return {
         token,
         user: userNew,
-        message: 'login1 google successfully',
+        message: 'create account google successfully',
       }
 
     }
@@ -220,7 +221,7 @@ export class AuthService {
     return {
       token,
       user: userFound,
-      message: 'login2 google successfully',
+      message: 'login google successfully',
     };
   }
 

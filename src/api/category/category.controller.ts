@@ -50,12 +50,13 @@ export class CategoryController {
     description: 'Category cannot create. Try again!',
   })
   @ApiConsumes('multipart/form-data')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)   //
   @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   create(@Body() createCategoryDto: CreateCategoryDto, @UploadedFile() file) {
     return this.categoryService.create(createCategoryDto, file?.filename);
+
   }
 
   // @UseGuards(JwtGuard)

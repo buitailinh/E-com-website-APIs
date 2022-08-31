@@ -13,7 +13,11 @@ export class ItemFlashsale extends BaseEntity {
     @Column('int')
     quantity: number;
 
-    @ManyToOne(() => FlashSale, (flashSale) => flashSale.itemFlashSales)
+    @ManyToOne(() => FlashSale, (flashSale) => flashSale.itemFlashSales, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     flashSale: FlashSale;
 
     @ManyToOne(() => Item, (item) => item.itemFlashSales)

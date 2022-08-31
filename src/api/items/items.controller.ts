@@ -61,6 +61,16 @@ export class ItemsController {
     return this.itemsService.getByName(nameItem);
   }
 
+
+  @ApiOkResponse({
+    type: Item,
+    description: 'Items flash sale'
+  })
+  @Get('flashsale/now')
+  findItemSale() {
+    return this.itemsService.getByItemSale();
+  }
+
   @ApiCreatedResponse({
     type: Item,
     description: 'Create a new item object as response',
@@ -69,6 +79,7 @@ export class ItemsController {
     description: 'Item cannot register. Try again!',
   })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))

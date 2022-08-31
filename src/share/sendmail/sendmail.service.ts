@@ -1,7 +1,10 @@
+import { AppConst } from './../common/app.const';
+import { AppKey } from './../common/app.key';
 import { FlashSale } from './../../api/flash_sale/entities/flash_sale.entity';
 import { UsersService } from './../../api/users/users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { AppObject } from '../common/app.object';
 
 @Injectable()
 export class SendmailService {
@@ -45,13 +48,15 @@ export class SendmailService {
   async sendNotification(flashsale: FlashSale) {
     const users = await this.userService.userRepository.find();
     const sendNotification = await users.map(user => {
-      this.mailerService.sendMail({
-        to: `${user.email}`,
-        from: 'linhbuitai@gmail.com',
-        subject: 'Forget password your',
-        text: `flash sale for ${user.email} is ${flashsale.nameSale}\n
+      if (user.role === AppObject.USER_MODULE.ROLE.CLIENT) {
+        this.mailerService.sendMail({
+          to: `${user.email}`,
+          from: 'linhbuitai@gmail.com',
+          subject: 'Forget password your',
+          text: `flash sale for ${user.email} is ${flashsale.nameSale}\n
               start: ${flashsale.timeStart} `,
-      });
+        });
+      }
     });
     await Promise.all(sendNotification);
   }

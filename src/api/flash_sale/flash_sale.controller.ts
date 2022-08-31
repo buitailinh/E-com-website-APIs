@@ -56,9 +56,9 @@ export class FlashSaleController {
     description: 'Flash sale cannot create. Try again!',
   })
   @ApiConsumes('multipart/form-data')
-  // @FormDataRequest()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
   create(@Body() createFlashSaleDto: CreateFlashSaleDto) {
     return this.flashSaleService.create(createFlashSaleDto);
@@ -90,8 +90,8 @@ export class FlashSaleController {
     description: 'Category cannot delete. Try again!',
   })
   @ApiParam({ name: 'id', type: 'string' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.flashSaleService.remove(+id);

@@ -25,15 +25,17 @@ export class CronjobService {
       const result = await this.itemService.getItemWithFS(item.id);
       if (result) {
         // this.logger.debug(`true: ${item.id}`);
-        await this.itemService.updateIsSaleTrue(item.id);
-        const itemSale = await this.itemService.getItemWithFS(item.id);
-        item.total = itemSale.total;
-        await this.itemService.itemRepository.save(item);
+        const itemTrue = await this.itemService.updateIsSaleTrue(item.id);
+        console.log(itemTrue);
+        const itemSale = await this.itemService.getItemWithFS(itemTrue.id);
+        itemTrue.total = itemSale.total;
+        await this.itemService.itemRepository.save(itemTrue);
+
       } else {
         // this.logger.debug(` false ${item.id}`);
         await this.itemService.updateIsSaleFalse(item.id);
-        item.total = item.priceEX * (100 - item.sale) / 100;
-        await this.itemService.itemRepository.save(item);
+        // item.total = item.priceEX * (100 - item.sale) / 100;
+        // await this.itemService.itemRepository.save(itemFalse);
       }
     });
     await Promise.all(itemFS);

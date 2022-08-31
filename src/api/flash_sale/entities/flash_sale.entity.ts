@@ -21,6 +21,8 @@ export class FlashSale extends BaseEntity {
     @Column({ length: 255, default: null })
     description: string;
 
-    @OneToMany(() => ItemFlashsale, (itemFalshSale) => itemFalshSale.flashSale)
+    @OneToMany(() => ItemFlashsale, (itemFalshSale) => itemFalshSale.flashSale,
+
+    )
     itemFlashSales: ItemFlashsale[];
 }

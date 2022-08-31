@@ -21,7 +21,7 @@ export class Item extends BaseEntity {
     @Column()
     priceEX: number;
 
-    @Column()
+    @Column({ default: 0 })
     total: number;
 
     @Column({ default: null })
@@ -34,7 +34,7 @@ export class Item extends BaseEntity {
     sale?: number;
 
     @Column({ default: false })
-    is_sale: boolean;
+    is_sale?: boolean;
 
     @Column('integer')
     quantity?: number;

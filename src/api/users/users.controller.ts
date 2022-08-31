@@ -98,8 +98,9 @@ export class UsersController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(AppObject.USER_MODULE.ROLE.PRO)
-  update(@Param('id') id: string, @Body() role: RoleUserDto) {
-    return this.usersService.update(+id, role);
+  async update(@Param('id') id: string, @Body() role: RoleUserDto) {
+
+    return await this.usersService.update(+id, role);
   }
 
   @ApiOkResponse({
@@ -116,5 +117,7 @@ export class UsersController {
   remove(@Query() query, @Request() req) {
     return this.usersService.remove(query.id);
   }
+
+
 
 }

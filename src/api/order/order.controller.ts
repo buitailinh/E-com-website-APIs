@@ -95,9 +95,9 @@ export class OrderController {
   @ApiBadRequestResponse({
     description: 'Order cannot update. Try again!',
   })
-  // @ApiConsumes('multipart/form-data')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(AppObject.USER_MODULE.ROLE.CLIENT)
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch('status/:id')
   updateStatus(@Param('id') id: string, @Body() status: StatusDto) {
     return this.orderService.updateStatus(+id, status.status);

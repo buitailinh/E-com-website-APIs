@@ -85,6 +85,16 @@ export class ItemsService {
     return item;
   }
 
+  async getByItemSale() {
+    const items = await this.itemRepository.findAndOptions({
+      where: {
+        is_sale: true,
+      }
+    });
+    if (items) return items;
+    return { message: 'Not have items sale' };
+  }
+
   async create(
     createItemDto: CreateItemDto,
     imageMain?: string,
@@ -111,7 +121,7 @@ export class ItemsService {
         message: AppKey.ERROR_MESSAGE.ITEM.ERR_BARCODE_EXIST,
       });
     const category = await this.categoryService.getById(categoryId);
-    category.amount += category.amount;
+    category.amount++;
     await this.categoryService.categoryRepository.save(category);
     if (priceEX < priceIM)
       throw new NotFoundException({
@@ -125,6 +135,7 @@ export class ItemsService {
       priceIM,
       imageMain,
       quantity,
+      total: priceEX,
       ...data,
     };
 
@@ -208,8 +219,9 @@ export class ItemsService {
     if (result) {
       throw new NotFoundException('Item in the process of selling');
     }
-    const category = await this.categoryService.getById(result.item_categoryId);
-    category.amount -= category.amount;
+    const item = await this.getById(id);
+    const category = await this.categoryService.getById(item.category.id);
+    category.amount--;
     await this.categoryService.categoryRepository.save(category);
     await this.removeFile(id);
     await this.itemRepository.delete(id);
@@ -270,17 +282,16 @@ export class ItemsService {
   async updateIsSaleTrue(id: number) {
     const item = await this.getById(id);
     if (!item.is_sale) {
-      await this.itemRepository.save({
-        ...item,
-        is_sale: true,
-      });
+      item.is_sale = true;
+      return await this.itemRepository.save(item);
     }
+    // console.log(item);
   }
 
   async updateIsSaleFalse(id: number) {
     const item = await this.getById(id);
     if (item.is_sale) {
-      await this.itemRepository.save({
+      return await this.itemRepository.save({
         ...item,
         is_sale: false,
         total: item.priceEX * (100 - item.sale) / 100,
