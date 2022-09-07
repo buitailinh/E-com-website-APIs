@@ -96,8 +96,8 @@ export class OrderController {
     description: 'Order cannot update. Try again!',
   })
   @ApiConsumes('multipart/form-data')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch('status/:id')
   updateStatus(@Param('id') id: string, @Body() status: StatusDto) {
     return this.orderService.updateStatus(+id, status.status);
@@ -110,8 +110,8 @@ export class OrderController {
   @ApiBadRequestResponse({
     description: 'Order cannot delete. Try again!',
   })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @ApiParam({ name: 'id' })
   @Delete(':id')
   remove(@Param('id') id: string) {

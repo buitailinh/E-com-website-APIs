@@ -38,9 +38,9 @@ export class OrderDetailService {
     const { quantity, itemId } = createOrderDetailDto;
     const item = await this.itemsService.getById(itemId);
     if (item.is_sale === true) {
-      const itemSale = await this.itemsService.getItemWithFS(itemId);
+      const itemSale = await this.itemsService.getItemWithFS(item.id);
       if (itemSale) {
-        if (quantity > itemSale.item_flashsale_quantity) {
+        if (quantity > itemSale.item_flashsale_quantity || itemSale.item_flashsale_quantity === 0) {
           throw new HttpException(
             {
               status: HttpStatus.FORBIDDEN,
@@ -49,7 +49,7 @@ export class OrderDetailService {
             HttpStatus.FORBIDDEN,
           );
         }
-        price = item.total * quantity;
+        price = itemSale.total * quantity;
         const item_flashsale = await this.itemFSService.findOne(
           itemSale.item_flashsale_id,
         );
@@ -58,16 +58,17 @@ export class OrderDetailService {
         await this.itemFSService.itemFSRepository.save(item_flashsale);
       }
     } else {
-      if (quantity > item.quantity) {
+      if (quantity > item.quantity || item.quantity === 0) {
         throw new HttpException(
           {
             status: HttpStatus.FORBIDDEN,
             error: `purchase quantity does not exceed ${item.quantity} item`,
           },
-          HttpStatus.FORBIDDEN,
+          HttpStatus.FORBIDDEN
         );
       }
       price = item.total * quantity;
+      console.log('price', price, 'item price', item.total);
     }
     item.quantity -= quantity;
     await this.itemsService.itemRepository.save(item);
@@ -77,7 +78,7 @@ export class OrderDetailService {
       quantity,
       item,
     }
-    return await this.orderDetailRepository.save(orderDetailNew);
+    return this.orderDetailRepository.save(orderDetailNew);
   }
 
   // update(id: number, updateOrderDetailDto: UpdateOrderDetailDto) { }

@@ -17,6 +17,10 @@ export class Image extends BaseEntity {
     @IsString()
     note?: string;
 
-    @ManyToOne(() => Item, (item) => item.images)
+    @ManyToOne(() => Item, (item) => item.images, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     item: Item;
 }

@@ -29,7 +29,7 @@ export class ImagesService {
       skip: skip,
     });
 
-    return await this.imageRepository.paginateResponse(data, page, take);
+    return this.imageRepository.paginateResponse(data, page, take);
   }
 
   async findOne(id: number) {
@@ -51,7 +51,7 @@ export class ImagesService {
 
     await item.save();
 
-    return await this.imageRepository.save(imageNew);
+    return this.imageRepository.save(imageNew);
   }
   async update(id: number, updateImageDto: UpdateImageDto, item: Item, image?: string) {
     const imageFound = await this.findOne(id);

@@ -14,7 +14,11 @@ export class OrderDetail extends BaseEntity {
     @ManyToOne(() => Item, (item) => item.order_details)
     item: Item;
 
-    @ManyToOne(() => Order, (order) => order.order_details)
+    @ManyToOne(() => Order, (order) => order.order_details, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     order: Order;
 
 }

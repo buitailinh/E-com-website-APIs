@@ -84,7 +84,7 @@ export class ItemsController {
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   create(@UploadedFile() image, @Body() createItemDto: CreateItemDto) {
-    console.log(createItemDto);
+    // console.log(createItemDto);
     return this.itemsService.create(createItemDto, image?.filename);
   }
 

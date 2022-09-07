@@ -45,7 +45,7 @@ export class OrderService {
       where: { id },
       relations: ['user', 'order_details', 'voucher'],
     });
-    if (!order) throw new Error(`Order ${id} not found`);
+    if (!order) throw new NotFoundException(`Order ${id} not found`);
     return order;
   }
 
@@ -78,9 +78,11 @@ export class OrderService {
 
       await this.orderRepository.save(order);
       if (order) {
-        const order_detail = await orderDetails.map((order_detail) => {
-          return this.orderDetailService.create(order_detail, order);
+        const order_detail = await orderDetails.map((item) => {
+          // console.log(item);
+          return this.orderDetailService.create(item, order);
         });
+        await Promise.all(order_detail);
         const orders = await Promise.all(order_detail);
         await orders.map((orderDetail) => {
           total += orderDetail.price;
@@ -125,6 +127,7 @@ export class OrderService {
 
   async remove(id: number) {
     const order = await this.findOne(id);
+    await this.orderRepository.delete(order.id);
     return { code: 200, message: `Order deleted successfully with id ${order.id}` };
   }
 }

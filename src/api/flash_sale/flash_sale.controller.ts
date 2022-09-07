@@ -1,3 +1,4 @@
+import { addItem_FlashSaleDto } from './dto/addItemFS.dto';
 import { FlashSale } from './entities/flash_sale.entity';
 import {
   Controller,
@@ -73,8 +74,8 @@ export class FlashSaleController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', type: 'string' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -82,6 +83,43 @@ export class FlashSaleController {
   ) {
     return this.flashSaleService.update(+id, updateFlashSaleDto);
   }
+
+  @ApiOkResponse({
+    type: FlashSale,
+    description: 'add item of flash sale successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Flash sale cannot add item. Try again!',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string' })
+  @Patch('add/:id')
+  addItem(
+    @Param('id') id: string,
+    @Body() addItemFlashSaleDto: addItem_FlashSaleDto,
+  ) {
+    return this.flashSaleService.addItemFS(+id, addItemFlashSaleDto);
+  }
+
+
+  @ApiOkResponse({
+    type: FlashSale,
+    description: 'add item of flash sale successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Flash sale cannot add item. Try again!',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string' })
+  @Delete('remove/:id/:idItem')
+  removeItem(
+    @Param('id') id: string,
+    @Param('idItem') idItem: string
+  ) {
+    return this.flashSaleService.removeItemFS(+id, +idItem);
+  }
+
+
 
   @ApiOkResponse({
     description: 'Delete category successfully',

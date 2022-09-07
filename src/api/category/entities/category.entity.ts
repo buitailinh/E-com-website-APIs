@@ -14,11 +14,7 @@ export class Category extends BaseEntity {
     @Column({ default: true })
     active?: boolean;
 
-    @OneToMany(() => Item, (item) => item.category, {
-        cascade: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @OneToMany(() => Item, (item) => item.category,)
     items: Item[];
 
     @Column({ default: 0 })

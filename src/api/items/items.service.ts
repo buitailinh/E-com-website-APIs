@@ -45,7 +45,7 @@ export class ItemsService {
       take: take,
       skip: skip,
     });
-    return await this.itemRepository.paginateResponse(data, page, take);
+    return this.itemRepository.paginateResponse(data, page, take);
   }
 
   async getById(id: number): Promise<Item> {
@@ -91,7 +91,7 @@ export class ItemsService {
         is_sale: true,
       }
     });
-    if (items) return items;
+    if (items[1] !== 0) return items;
     return { message: 'Not have items sale' };
   }
 
@@ -139,7 +139,7 @@ export class ItemsService {
       ...data,
     };
 
-    return await this.itemRepository.save(itemNew);
+    return this.itemRepository.save(itemNew);
   }
 
   async update(id: number, updateItemDto: UpdateItemDto, image: string) {
@@ -175,7 +175,7 @@ export class ItemsService {
     // const item = await this.getById(id);
     const item = await this.removeFile(id);
     item.imageMain = imageMain;
-    return await this.itemRepository.save(item);
+    return this.itemRepository.save(item);
   }
 
   async purchaseItem(id: number, amount: number) {
@@ -186,13 +186,13 @@ export class ItemsService {
       throw new ConflictException(
         'Quantity ordered exceeds the number of items available',
       );
-    return await this.itemRepository.save(item);
+    return this.itemRepository.save(item);
   }
 
   async addSLB(id: number, amount: number) {
     const item = await this.getById(id);
     item.quantity = parseInt(item.quantity.toString()) + parseInt(amount.toString());
-    return await this.itemRepository.save(item);
+    return this.itemRepository.save(item);
   }
 
   async getItemForOrder(id: number) {
@@ -281,22 +281,21 @@ export class ItemsService {
 
   async updateIsSaleTrue(id: number) {
     const item = await this.getById(id);
-    if (!item.is_sale) {
-      item.is_sale = true;
-      return await this.itemRepository.save(item);
-    }
+
+    item.is_sale = true;
+    return await this.itemRepository.save(item);
     // console.log(item);
   }
 
   async updateIsSaleFalse(id: number) {
     const item = await this.getById(id);
-    if (item.is_sale) {
-      return await this.itemRepository.save({
-        ...item,
-        is_sale: false,
-        total: item.priceEX * (100 - item.sale) / 100,
-      });
-    }
+
+    return await this.itemRepository.save({
+      ...item,
+      is_sale: false,
+      total: item.priceEX * (100 - item.sale) / 100,
+    });
+
   }
 
   async exportData1() {

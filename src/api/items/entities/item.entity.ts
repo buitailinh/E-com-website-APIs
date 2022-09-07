@@ -39,27 +39,19 @@ export class Item extends BaseEntity {
     @Column('integer')
     quantity?: number;
 
-    @ManyToOne(() => Category, (category) => category.items)
+    @ManyToOne(() => Category, (category) => category.items, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     category?: Category;
 
-    @OneToMany(() => Image, (image) => image.item, {
-        cascade: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @OneToMany(() => Image, (image) => image.item)
     images: Image[];
 
-    @OneToMany(() => ItemFlashsale, (itemFlashSale) => itemFlashSale.item, {
-        cascade: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @OneToMany(() => ItemFlashsale, (itemFlashSale) => itemFlashSale.item)
     itemFlashSales: ItemFlashsale[];
 
-    @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.item, {
-        cascade: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.item)
     order_details: OrderDetail[];
 }

@@ -29,7 +29,7 @@ export class UsersService {
       skip: skip,
     });
 
-    return await this.userRepository.paginateResponse(data, page, take);
+    return this.userRepository.paginateResponse(data, page, take);
   }
 
   async findOne(id: number) {
@@ -140,7 +140,7 @@ export class UsersService {
       brithday,
     }
 
-    return await this.userRepository.save({ ...user, ...updateUser });
+    return this.userRepository.save({ ...user, ...updateUser });
   }
 
   async remove(ids: number[]) {

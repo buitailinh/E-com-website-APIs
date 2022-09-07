@@ -27,7 +27,7 @@ export class VoucherService {
       skip: skip,
     });
 
-    return await this.voucherRepository.paginateResponse(data, page, take);
+    return this.voucherRepository.paginateResponse(data, page, take);
   }
 
 
@@ -62,7 +62,7 @@ export class VoucherService {
       throw new NotFoundException({ message: 'start time must be greater than current time' });
     }
     if (timeS.getTime() > timeE.getTime()) throw new NotFoundException({ message: 'start time must be less than end time' });
-    return await this.voucherRepository.save(createVoucherDto);
+    return this.voucherRepository.save(createVoucherDto);
   }
 
   async update(id: number, updateVoucherDto: UpdateVoucherDto) {
@@ -84,7 +84,7 @@ export class VoucherService {
       timeEnd: timeE,
       ...data
     }
-    return await this.voucherRepository.update(id, voucherUpdate);
+    return this.voucherRepository.update(id, voucherUpdate);
   }
 
   async remove(id: number) {

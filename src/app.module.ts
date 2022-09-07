@@ -20,6 +20,7 @@ import { OtpModule } from './share/otp/otp.module';
 import { CronjobModule } from './share/cronjob/cronjob.module';
 import { CronjobService } from './share/cronjob/cronjob.service';
 import { ScheduleModule } from '@nestjs/schedule';
+import { QueueModule } from './share/queue/queue.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     OrderModule,
     SendmailModule,
     OtpModule,
-    CronjobModule
+    CronjobModule,
+    QueueModule
   ],
   controllers: [],
   providers: [

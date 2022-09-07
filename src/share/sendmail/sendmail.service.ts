@@ -52,7 +52,7 @@ export class SendmailService {
         this.mailerService.sendMail({
           to: `${user.email}`,
           from: 'linhbuitai@gmail.com',
-          subject: 'Forget password your',
+          subject: 'Flash sale today',
           text: `flash sale for ${user.email} is ${flashsale.nameSale}\n
               start: ${flashsale.timeStart} `,
         });

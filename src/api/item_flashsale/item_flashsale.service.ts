@@ -18,13 +18,14 @@ export class ItemFlashsaleService {
 
   async findOne(id: number) {
     const itemFS = await this.itemFSRepository.findOneByCondition({
-      where: id,
+      where: { id },
       relations: ['item'],
     });
     // console.log(itemFS);
     if (!itemFS) return null;
     return itemFS;
   }
+
 
   async create(
     createItemFlashsaleDto: CreateItemFlashsaleDto,
@@ -43,7 +44,7 @@ export class ItemFlashsaleService {
       item,
       flashSale,
     };
-    return await this.itemFSRepository.save(itemFSNew);
+    return this.itemFSRepository.save(itemFSNew);
   }
 
   async update(id: number, updateItemFlashsaleDto: UpdateItemFlashsaleDto) {
@@ -63,7 +64,7 @@ export class ItemFlashsaleService {
       }
 
       const itemFSUpdated = Object.assign(itemFS, UpdateItemFlashsaleDto);
-      return await this.itemFSRepository.update(id, itemFSUpdated);
+      return this.itemFSRepository.update(id, itemFSUpdated);
 
     } catch (error) {
       throw new BadRequestException('Sever error');

@@ -32,7 +32,7 @@ export class CategoryService {
       take: take,
       skip: skip,
     });
-    return await this.categoryRepository.paginateResponse(data, page, take);
+    return this.categoryRepository.paginateResponse(data, page, take);
   }
 
 
@@ -71,7 +71,7 @@ export class CategoryService {
       ...data
     }
 
-    return await this.categoryRepository.save(categoryNew);
+    return this.categoryRepository.save(categoryNew);
   }
 
   async findImageById(id: number) {
@@ -86,7 +86,7 @@ export class CategoryService {
     const category = this.findImageById(id);
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
     const categoryUpdate = Object.assign(category, banner);
-    return await this.categoryRepository.update(id, categoryUpdate);
+    return this.categoryRepository.update(id, categoryUpdate);
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto, image: string) {   // 
