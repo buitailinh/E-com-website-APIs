@@ -1,3 +1,4 @@
+import { MinioClientModule } from './../../share/minio-client/minio-client.module';
 import { UsersModule } from './../users/users.module';
 import { AuthModule } from './../../share/auth/auth.module';
 import { CategoryRepository } from './category.repository';
@@ -8,7 +9,7 @@ import { CategoryController } from './category.controller';
 import { categoryProvider } from './category.provider';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [DatabaseModule, UsersModule, MinioClientModule],
   controllers: [CategoryController],
   providers: [CategoryService, CategoryRepository, ...categoryProvider],
   exports: [CategoryService, CategoryRepository]

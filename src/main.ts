@@ -7,12 +7,14 @@ import * as dotenv from 'dotenv';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { JWT_CONFIG } from './config/constant.config';
+import cookieParser from 'cookie-parser';
 
 const configService = new ConfigService();
 dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   appConfig(app);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -33,6 +35,7 @@ async function bootstrap() {
   // app.use(passport.initialize());
   // app.use(passport.session());
 
+  app.use(cookieParser());
   await app.listen(configService.get<number>('PORT') || 3000);
 }
 bootstrap();

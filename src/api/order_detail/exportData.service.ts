@@ -11,11 +11,14 @@ import keys from "../../../keys.json";
 import { convertCSVToArray } from 'convert-csv-to-array';
 import { AppObject } from 'src/share/common/app.object';
 import { Item } from '../items/entities/item.entity';
+import { ItemRepository } from '../items/items.repository';
 
 @Injectable()
 export class ExportDataService {
     constructor(private readonly OrderDetailRepository: OrderDetailRepository,
-        private readonly OrderDetailService: OrderDetailService
+        private readonly OrderDetailService: OrderDetailService,
+        private readonly itemRepository: ItemRepository,
+
     ) { };
 
     async gsun(client, query) {
@@ -116,5 +119,75 @@ export class ExportDataService {
             .execute();
 
         return query[0];
+    }
+
+
+    async findTop10() {
+        const query = await getConnection().query(`
+        Select i.id, i.nameItem, SUM(od.quantity) as quantity
+        from item  i  left join order_detail od
+        on od.itemId = i.id
+        group by i.id
+        order by  SUM(od.quantity) desc limit 3;
+        `)
+
+        return query;
+    }
+
+    async gsun1(client) {
+
+        const data = await json2csvAsync(await this.findTop10());
+
+        const gsapi = google.sheets({ version: 'v4', auth: client });
+        const metaData = await gsapi.spreadsheets.get({
+            auth: client,
+            spreadsheetId: keys.sheep_id,
+        });
+        console.log(metaData.data.spreadsheetUrl);
+
+        let arrayData = convertCSVToArray(data, {
+            type: 'array',
+            separator: ',',
+
+        });
+
+        const updateOptions = {
+            spreadsheetId: keys.sheep_id,
+            range: 'top10!A1',
+            valueInputOption: 'USER_ENTERED',
+            resource: { values: arrayData },
+        };
+        gsapi.spreadsheets.values.update(updateOptions, function (err, response) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log(response);
+
+        });
+
+
+        return { url: metaData.data.spreadsheetUrl };
+    }
+
+    async exportData2() {
+
+        const client = new google.auth.JWT(
+            keys.client_email,
+            null,
+            keys.private_key,
+            ['https://www.googleapis.com/auth/spreadsheets']
+        );
+
+        client.authorize((err, tokens) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log('Connected');
+
+        });
+
+        return await this.gsun1(client);
     }
 }

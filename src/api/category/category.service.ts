@@ -1,3 +1,5 @@
+import { MinioClientService } from './../../share/minio-client/minio-client.service';
+import { BufferedFile } from 'src/share/minio-client/file.model';
 import { AppKey } from './../../share/common/app.key';
 import { Category } from './entities/category.entity';
 import { CategoryRepository } from './category.repository';
@@ -8,10 +10,13 @@ import { Like } from 'typeorm';
 import * as fs from 'fs';
 import { from, map } from 'rxjs';
 import { parse } from 'path';
+import console from 'console';
 
 @Injectable()
 export class CategoryService {
-  constructor(public categoryRepository: CategoryRepository,) { };
+  constructor(public categoryRepository: CategoryRepository,
+    private minioClientService: MinioClientService,
+  ) { };
 
   async findAll(query) {
     const take = query.take || process.env.TAKE_PAGE;
@@ -58,16 +63,17 @@ export class CategoryService {
     return category;
   }
 
-  async create(createCatogoryDto: CreateCategoryDto, file?: string): Promise<Category> {
+  async create(createCatogoryDto: CreateCategoryDto, file?: BufferedFile): Promise<Category> {
     const { nameCategory, ...data } = createCatogoryDto;
-    // console.log(createCatogoryDto);
+    let image;
     const category = await this.categoryRepository.findOneByCondition({
       where: { nameCategory }
     });
     if (category) throw new NotFoundException(AppKey.ERROR_MESSAGE.CATEGORY.ERR_EXIST);
+    if (file) image = (await this.minioClientService.upload(file)).url;
     const categoryNew = {
       nameCategory,
-      banner: file,
+      banner: image,
       ...data
     }
 
@@ -89,16 +95,21 @@ export class CategoryService {
     return this.categoryRepository.update(id, categoryUpdate);
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto, image: string) {   // 
+  async update(id: number, updateCategoryDto: UpdateCategoryDto, image?: BufferedFile) {   // 
     const category = this.getById(id);
+    let file;
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
     if (image) {
       await this.removeFile(id);
+      file = (await this.minioClientService.upload(image)).url;
+      // console.log(file);
     }
     const CategoryFeld = {
-      banner: image,     //
+      banner: file,     //
       ...updateCategoryDto,
     }
+
+    console.log(CategoryFeld);
     const categoryUpdate = Object.assign(category, CategoryFeld);
     await this.categoryRepository.update(id, categoryUpdate);
     return { message: `update successfully ${id}` };
@@ -118,17 +129,17 @@ export class CategoryService {
     const category = await this.getById(id);
     if (!category) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.CATEGORY.ERR_NOT_EXIST });
     try {
-      const link = `./images/Category/${category.banner}`;
-      fs.unlinkSync(link)
+      await this.minioClientService.delete(category.banner.replace('localhost:9000/photos/', ''));
       console.log("Successfully deleted the file.")
     } catch (err) {
       throw err
     }
     const bannerUpdate = {
-      image: null,
+      banner: null,
     }
     const categoryUpdate = Object.assign(category, bannerUpdate);
-    await this.categoryRepository.update(id, categoryUpdate);
+    // console.log(categoryUpdate);
+    await this.categoryRepository.save(categoryUpdate);
     // return category;
   }
 }

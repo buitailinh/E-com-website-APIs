@@ -14,7 +14,7 @@ import {
 import { FlashSaleService } from './flash_sale.service';
 import { CreateFlashSaleDto } from './dto/create-flash_sale.dto';
 import { UpdateFlashSaleDto } from './dto/update-flash_sale.dto';
-import { ApiBadRequestResponse, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/share/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/share/auth/guards/role.guard';
 import { AppObject } from 'src/share/common/app.object';
@@ -22,6 +22,7 @@ import { Roles } from 'src/share/decorator/roles.decorator';
 import { filterDto } from '../category/dto/filter.dto';
 
 @ApiTags('flash sale')
+@ApiBearerAuth()
 @Controller('flash-sale')
 export class FlashSaleController {
   constructor(private readonly flashSaleService: FlashSaleService) { }

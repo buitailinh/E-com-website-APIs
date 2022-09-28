@@ -7,11 +7,12 @@ import { OrderDetailService } from './order_detail.service';
 import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order_detail.dto';
 import { OrderService } from '../order/order.service';
-import { ApiBadRequestResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AppObject } from './../../share/common/app.object';
 import { ExportDataService } from './exportData.service';
 
 @ApiTags('Order detail')
+@ApiBearerAuth()
 @Controller('order-detail')
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService,
@@ -32,6 +33,16 @@ export class OrderDetailController {
   @Get('exportgoogle')
   getGGS2(@Query() query) {
     return this.exportDataService.exportData(query);
+  }
+
+  @ApiOkResponse({
+    type: OrderDetail,
+    description: 'List port',
+  })
+  @ApiQuery({})
+  @Get('top10')
+  getGGS3() {
+    return this.exportDataService.exportData2();
   }
 
   @ApiOkResponse({

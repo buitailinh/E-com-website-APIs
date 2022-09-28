@@ -1,3 +1,4 @@
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { DatabaseModule } from '../../config/database/database.module';
 import { OtpModule } from './../otp/otp.module';
 import { ConfigModule } from '@nestjs/config';
@@ -18,7 +19,7 @@ import { SendmailModule } from '../sendmail/sendmail.module';
   imports: [DatabaseModule, UsersModule, PassportModule, OtpModule, ConfigModule,  //.register({ session: true })
     JwtModule.registerAsync(jwtConfig), SendmailModule],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, GoogleStrategy],
   exports: [AuthService],
 })
 export class AuthModule { }

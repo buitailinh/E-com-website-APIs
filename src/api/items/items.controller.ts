@@ -6,7 +6,7 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './items.constant';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Item } from './entities/item.entity';
 import { Roles } from './../../share/decorator/roles.decorator';
 import { AppObject } from './../../share/common/app.object';
@@ -14,6 +14,7 @@ import { RolesGuard } from './../../share/auth/guards/role.guard';
 import { ExportDataService } from './exportData.service';
 
 @ApiTags('Items')
+@ApiBearerAuth()
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService,

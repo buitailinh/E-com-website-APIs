@@ -1,3 +1,4 @@
+import { Brand } from './../../brands/entities/brand.entity';
 import { OrderDetail } from './../../order_detail/entities/order_detail.entity';
 import { ItemFlashsale } from './../../item_flashsale/entities/item_flashsale.entity';
 import { Category } from './../../category/entities/category.entity';
@@ -7,6 +8,7 @@ import { ITEM_CONST } from '../items.constant';
 import { Image } from './../../images/entities/image.entity';
 
 import { BaseEntity } from './../../../share/database/BaseEntity';
+import { FavoriteItem } from 'src/api/favorite_item/entities/favorite_item.entity';
 @Entity({ name: ITEM_CONST.MODEL_NAME })
 export class Item extends BaseEntity {
     @Column({ length: 255, unique: true, })
@@ -46,6 +48,14 @@ export class Item extends BaseEntity {
     })
     category?: Category;
 
+
+    @ManyToOne(() => Brand, (brand) => brand.items, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    brand?: Brand;
+
     @OneToMany(() => Image, (image) => image.item)
     images: Image[];
 
@@ -54,4 +64,7 @@ export class Item extends BaseEntity {
 
     @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.item)
     order_details: OrderDetail[];
+
+    @OneToMany(() => FavoriteItem, (favoriteItem) => favoriteItem.item)
+    favorites: FavoriteItem[];
 }

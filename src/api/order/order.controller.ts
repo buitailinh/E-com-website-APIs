@@ -1,17 +1,19 @@
+import { AppKey } from './../../share/common/app.key';
 import { StatusDto } from './dto/status-order.dto';
 import { RolesGuard } from './../../share/auth/guards/role.guard';
 import { JwtAuthGuard } from './../../share/auth/guards/jwt-auth.guard';
 import { Roles } from './../../share/decorator/roles.decorator';
 import { Order } from './entities/order.entity';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request, NotFoundException } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UsersService } from '../users/users.service';
-import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AppObject } from './../../share/common/app.object';
 
 @ApiTags('Order')
+@ApiBearerAuth()
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService,
@@ -39,6 +41,7 @@ export class OrderController {
   @Get('user')
   async getUser(@Request() req) {
     const user = await this.userService.findOne(req.user.id);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
     return this.orderService.getOrderByUser(user);
   }
 
@@ -68,6 +71,7 @@ export class OrderController {
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto, @Request() req) {
     const user = await this.userService.findOne(req.user.id);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
     return this.orderService.create(createOrderDto, user);
   }
 

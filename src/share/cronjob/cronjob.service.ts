@@ -51,9 +51,7 @@ export class CronjobService {
       const timeNow = new Date().setSeconds(0, 0);
       const flashsale = await this.flashSaleService.flashSaleRepository.find();
       await flashsale.map(async (flashsale) => {
-        const timeStartBefore15min = new Date(
-          new Date(flashsale.timeStart).getTime() - 15 * 60 * 1000,
-        ).getTime();
+        const timeStartBefore15min = new Date(flashsale.timeStart).getTime() - 5 * 60 * 1000;
         if (timeNow === timeStartBefore15min) {
           this.logger.debug('Send email notification');
           await this.sendEmailService.sendNotification(flashsale);

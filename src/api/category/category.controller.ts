@@ -1,11 +1,12 @@
+import { BufferedFile } from 'src/share/minio-client/file.model';
 import { Category } from './entities/category.entity';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseInterceptors, UploadedFile, Request, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseInterceptors, UploadedFile, Request, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { multerOptions } from './category.constant';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../share/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../share/auth/guards/role.guard';
 import { AppObject } from '../../share/common/app.object';
@@ -13,6 +14,7 @@ import { Roles } from '../../share/decorator/roles.decorator';
 import { filterDto } from './dto/filter.dto';
 
 @ApiTags('Category')
+@ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
@@ -53,9 +55,9 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)   //
   @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Post()
-  @UseInterceptors(FileInterceptor('file', multerOptions))
-  create(@Body() createCategoryDto: CreateCategoryDto, @UploadedFile() file) {
-    return this.categoryService.create(createCategoryDto, file?.filename);
+  @UseInterceptors(FileInterceptor('file'))
+  create(@Body() createCategoryDto: CreateCategoryDto, @UploadedFile() file: BufferedFile) {
+    return this.categoryService.create(createCategoryDto, file);
 
   }
 
@@ -92,9 +94,9 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(AppObject.USER_MODULE.ROLE.ADMIN)
   @Patch(':id')   //
-  @UseInterceptors(FileInterceptor('file', multerOptions))
-  update(@Param('id') id: string, @UploadedFile() image, @Body() updateCategoryDto: UpdateCategoryDto) {   // , 
-    return this.categoryService.update(+id, updateCategoryDto, image?.filename);   // 
+  @UseInterceptors(FileInterceptor('file'))
+  update(@Param('id') id: string, @UploadedFile() file: BufferedFile, @Body() updateCategoryDto: UpdateCategoryDto) {   // , 
+    return this.categoryService.update(+id, updateCategoryDto, file);   // 
   }
 
   @ApiOkResponse({

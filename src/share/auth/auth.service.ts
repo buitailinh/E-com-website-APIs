@@ -1,10 +1,13 @@
+import { PatternLib } from './../utils/pattern.lib';
+import { Matches } from 'class-validator';
+import { User } from './../../api/users/entities/user.entity';
 import { ForgetPassword } from './dto/forgetPassword.dto';
-import { async } from 'rxjs';
+import { async, retry } from 'rxjs';
 import { JwtPayload } from './jwt-payload.interface';
 import { SignDto } from './dto/signIn.dto';
 import { SendmailService } from './../sendmail/sendmail.service';
 import { AppKey } from './../common/app.key';
-import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, NotFoundException, HttpException, HttpStatus, Res } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './../../api/users/users.service';
@@ -13,6 +16,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from './../../api/users/users.repository';
 import { OtpService } from '../otp/otp.service';
+import { SmsService } from '../otp/sms.service';
+import { Http } from 'winston/lib/winston/transports';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,84 +28,117 @@ export class AuthService {
     private userRepository: UserRepository,
     private sendMailService: SendmailService,
     private otpService: OtpService,
+    private smsService: SmsService
   ) { };
   async validateUserCreds(email: string, passwordI: string): Promise<any> {
     console.log(`${email},${passwordI}`);
 
     const user = await this.userService.getByEmail(email);
-    // console.log(user);
-    if (user === null) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
 
 
     if (!(await bcrypt.compareSync(passwordI, user.password)))
-      throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_PASS_CORRECT });
+      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
     // console.log(user);
-    const { password, ...data } = user;
-    return data;
+    user.password = undefined;
+    return user;
   }
 
-  async generateToken(user: any) {
+  async generateToken(user: any, refresh = true) {
     // console.log(`${user.fullname}`)
     const payload: JwtPayload = { email: user.email, id: user.id, role: user.role };
-    return {
-      access_token: this.jwtService.sign({ payload }, { expiresIn: process.env.JWT_EXPIRE_TIME }),
-      refresh_Token: this.jwtService.sign({ payload },
+    const access_token = this.jwtService.sign({ payload }, { expiresIn: process.env.JWT_EXPIRE_TIME });
+
+    if (refresh) {
+      const refresh_Token = this.jwtService.sign({ payload },
         {
           secret: process.env.REFRESH_JWT_SECRET,
           expiresIn: process.env.REFRESH_JWT_EXPIRE_TIME
-        }),
+        });
+      const refreshToken = await bcrypt.hash(
+        this.reverse(refresh_Token),
+        10,
+      );
+      await this.userService.userRepository.save({ ...user, refreshToken });
+      return {
+        expiresIn: process.env.JWT_EXPIRE_TIME,
+        access_token,
+        expiresInRefresh: process.env.REFRESH_JWT_EXPIRE_TIME,
+        refresh_Token,
+      }
+    }
+    else {
+      return {
+        expiresIn: process.env.JWT_EXPIRE_TIME,
+        access_token,
+      };
     }
   }
 
   async refreshToken(refreshToken: string) {
-    const result = await this.jwtService.verify(refreshToken, {
-      secret: process.env.REFRESH_JWT_SECRET,
-    });
-    if (result) {
-      const email = result.email;
-      const id = result.id;
-      const role = result.role;
-      const payload: JwtPayload = { email, id, role }
-      const access_token = this.jwtService.sign({ payload }, {
-        expiresIn: '24h',
+    try {
+      const payload = await this.jwtService.verify(refreshToken, {
+        secret: process.env.REFRESH_JWT_SECRET,
       });
+      const user = await this.getUserByRefresh(refreshToken, payload.payload.email);
+      const token = await this.generateToken(user, false);
+      return `Authentication=${token.access_token}; HttpOnly; Path=/; Max-Age=${token.expiresIn}`;
 
-      return {
-        code: 200,
-        message: 'refreshToken token success',
-        access_token,
-      }
+    } catch (e) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
+
+  }
+
+  async getUserByRefresh(refreshToken, email) {
+    const user = await this.userService.getByEmail(email);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
+    const is_equal = await bcrypt.compare(
+      this.reverse(refreshToken),
+      user.refreshToken
+    );
+    if (!is_equal) throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    return user;
+  }
+
+  private reverse(s) {
+    return s.split('').reverse().join('');
   }
 
   async signUp(createUserDto: CreateUserDto, file?: string) {
     const user = await this.userService.create(createUserDto, file);
-    console.log(user);
+    // console.log(user);
     const token = await this.generateToken(user);
-    // await this.mailerServicce.sendMail({
-    //   to: user.email,
-    //   from: 'linhbuitai@gmail.com',
-    //   subject: 'verify email address your',
-    //   text: ``,
-    //   html: `<html><h4>welcome to web shopp</h4> and link your account to: <a href=${process.env.BACKEND_HOST}/auth/email/verify?token=${token.access_token}>confirm Email</a> </html> `,
-    // });
-
     await this.sendMailService.sendVerifiedEmail(user.email, token.access_token);
 
     return {
-      code: 200,
+      status: HttpStatus.OK,
       message: 'Đăng ký thành công, email send message to verification',
     };
   }
 
 
+
+
   async signIn(signDto: SignDto) {
     const { email, password } = signDto;
     const user = await this.userService.getByEmail(email);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
     if (user && (await bcrypt.compare(password, user.password))) {
-      if (user.isVerify === false) throw new UnauthorizedException('chua verify email');
+      if (user.isVerify === false) {
+        const token = await this.generateToken(user);
+        await this.sendMailService.sendVerifiedEmail(user.email, token.access_token);
+        return {
+          status: HttpStatus.ACCEPTED,
+          message: 'Because you have not confirmed your email address, please read in your email inbox'
+        }
+      };
       const token = await this.generateToken(user);
-      return { message: 'Login successful', token, user };
+      const cookie1 = `Authentication=${token.access_token}; HttpOnly; Path=/; Max-Age=${token.expiresIn}`;
+      const cookie2 = `Refresh=${token.refresh_Token}; HttpOnly; Path=/; Max-Age=${token.expiresInRefresh}`;
+      const cookie = { cookie1, cookie2 };
+      return { message: 'Login successful', status: HttpStatus.OK, token, cookie };
+      // return cookie;
     }
     else {
       throw new UnauthorizedException('email or passsword is incorrect');
@@ -113,11 +151,15 @@ export class AuthService {
     // console.log(decodedJwtAccessToken['payload']);
     // console.log(token);
     if (email === decodedJwtAccessToken['payload'].email) {
-      await this.userService.getByEmail(email)
+      const user = await this.userService.getByEmail(email)
+      if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
       await this.userService.verifyEmail(email);
-      return 'verify email successfully';
+      return {
+        status: HttpStatus.OK,
+        message: 'verify email successfully',
+      };
     }
-    return 'verify email failed';
+    throw new BadRequestException('verify email failed');
 
   }
 
@@ -132,18 +174,58 @@ export class AuthService {
   //   return check;
   // }
 
+  async logout(id: number) {
+    const user = await this.userService.findOne(id);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
+    await this.userService.userRepository.save({ ...user, refreshToken: null })
+  }
+
+  // async sendForgetPassword(email: string) {
+  //   const user = await this.userService.getByEmail(email);
+  //   const otp = await this.otpService.generateOtp(user.email);
+  //   console.log(otp);
+  //   await this.sendMailService.sendForgetPassword(email, otp);
+  //   return {
+  //     status: HttpStatus.OK,
+  //     message: 'send forget password successfully',
+  //   };
+  // }
+
+  // async forgetPassword(forgetPassword: ForgetPassword) {
+  //   const { email, newPassword, OTP } = forgetPassword;
+  //   const user = await this.userService.getByEmail(email);
+  //   const result = await this.otpService.checkOtp(user.email, OTP);
+  //   if (result) {
+  //     const updatePassword = await this.userService.resertPassword(email, newPassword);
+  //     if (updatePassword) {
+  //       return {
+  //         status: HttpStatus.CREATED,
+  //         message: 'update password successfully',
+  //       };
+  //     }
+  //     return {
+  //       status: HttpStatus.BAD_REQUEST,
+  //       message: 'update password failed',
+  //     };
+  //   }
+  // }
+
   async sendForgetPassword(email: string) {
     const user = await this.userService.getByEmail(email);
-    const otp = await this.otpService.generateOtp(user.email);
-    console.log(otp);
-    await this.sendMailService.sendForgetPassword(email, otp);
-    return 'send forget password successfully';
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
+    if (!user.phone) throw new BadRequestException('Phone number not exists');
+    await this.smsService.initiatePhoneNumberVerification(user.phone);
+    return {
+      message: 'please check sms verificationCode',
+      status: HttpStatus.PROCESSING,
+    }
   }
 
   async forgetPassword(forgetPassword: ForgetPassword) {
     const { email, newPassword, OTP } = forgetPassword;
     const user = await this.userService.getByEmail(email);
-    const result = await this.otpService.checkOtp(user.email, OTP);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
+    const result = await this.smsService.confirmPhonePhoneNumber(user.phone, OTP);
     if (result) {
       const updatePassword = await this.userService.resertPassword(email, newPassword);
       if (updatePassword) {
@@ -152,6 +234,7 @@ export class AuthService {
       return 'update password failed';
     }
   }
+
 
   // async sendEmailForgotPassword(email: string) {
   //   const userFound = await this.userService.getByEmail(email);
@@ -193,6 +276,16 @@ export class AuthService {
   //   return await this.generateToken(userUpdate);
   // }
 
+  async addPhone(user: User, phone) {
+    if (!phone.Matches(PatternLib.phone))
+      throw new BadRequestException('Phone must match pattern');
+    const userFound = await this.userService.findOne(user.id);
+    if (!userFound) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
+    const phoneUser = await this.userService.getByPhone(phone);
+    if (phoneUser && user.phone !== phoneUser.phone) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST });
+    return this.userRepository.save({ ...userFound, phone });
+  }
+
   async loginGG(data) {
     const { user } = data;
     console.log(user);
@@ -210,8 +303,10 @@ export class AuthService {
       const userNew = await this.userRepository.create(userdata);
       await this.userService.verifyEmail(userNew.email);
       const token = await this.generateToken(userNew);
+
       return {
-        token,
+        ...token,
+        url: 'localhost:8888/auth/addPhone',
         user: userNew,
         message: 'create account google successfully',
       }
@@ -219,7 +314,7 @@ export class AuthService {
     }
     const token = await this.generateToken(userFound);
     return {
-      token,
+      ...token,
       user: userFound,
       message: 'login google successfully',
     };

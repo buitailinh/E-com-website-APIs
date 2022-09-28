@@ -1,7 +1,8 @@
+import { SmsService } from './sms.service';
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 import { OtpService } from './otp.service';
-
+import * as Joi from '@hapi/joi';
 
 @Module({
   imports: [
@@ -10,9 +11,16 @@ import { OtpService } from './otp.service';
         ttl: 35000,
       }),
       // inject: [ConfigService]
+    }),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        TWILIO_ACCOUNT_SID: Joi.string().required(),
+        TWILIO_AUTH_TOKEN: Joi.string().required(),
+        TWILIO_VERIFICATION_SERVICE_SID: Joi.string().required()
+      }),
     })
   ],
-  providers: [OtpService],
-  exports: [OtpService],
+  providers: [OtpService, SmsService],
+  exports: [OtpService, SmsService],
 })
 export class OtpModule { }

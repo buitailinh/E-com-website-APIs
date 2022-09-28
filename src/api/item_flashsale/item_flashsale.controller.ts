@@ -7,10 +7,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, U
 import { ItemFlashsaleService } from './item_flashsale.service';
 import { CreateItemFlashsaleDto } from './dto/create-item_flashsale.dto';
 import { UpdateItemFlashsaleDto } from './dto/update-item_flashsale.dto';
-import { ApiBadRequestResponse, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AppObject } from './../../share/common/app.object';
 
 @ApiTags('Item flash sale')
+@ApiBearerAuth()
 @Controller('item-flashsale')
 export class ItemFlashsaleController {
   constructor(private readonly itemFlashsaleService: ItemFlashsaleService,

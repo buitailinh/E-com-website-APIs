@@ -13,6 +13,7 @@ import { RolesGuard } from '../../share/auth/guards/role.guard';
 import { AppObject } from '../../share/common/app.object';
 
 @ApiTags('Images')
+@ApiBearerAuth()
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService,

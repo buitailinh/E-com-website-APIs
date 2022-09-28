@@ -6,6 +6,12 @@ export const JWT_CONFIG = {
     expiresIn: process.env.JWT_EXPIRE_TIME,
 };
 
+export const JWT_REFRESH_CONFIG = {
+    secret: process.env.REFRESH_JWT_SECRET,
+    expiresIn: process.env.REFRESH_JWT_EXPIRE_TIME,
+
+};
+
 export const MYSQL_CONFIG = {
     hostMaster: process.env.MYSQL_MASTER_HOST || '',
     hostSlaves: process.env.MYSQL_SLAVES_HOST || '',

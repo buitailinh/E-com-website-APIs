@@ -21,7 +21,7 @@ export class OtpService {
       specialChars: false,
       upperCase: false,
     });
-    await this.cacheManager.set(otp, email);
+    await this.cacheManager.set(otp, email, { ttl: 180 });
     return otp;
   }
 

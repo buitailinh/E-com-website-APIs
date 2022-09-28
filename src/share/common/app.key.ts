@@ -97,6 +97,7 @@ export class AppKey {
       ERR_ID_NOT_VALID: 'Id user not valid!',
       ERR_CANT_CHANGE_ROLE: 'Can not change role!',
       ERR_PHONE_EXIST: 'Phone number already exists!',
+      ERR_NOT_PHONE_EXIST: 'Phone number is not exists!',
       ERR_EMAIL_EXIST: 'Email already exists!',
       ERR_ACCOUNT_INVALID: 'User is invalid!',
       ERR_REFERRAL_CODE_WRONG: 'Wrong referral code. Please try again!'

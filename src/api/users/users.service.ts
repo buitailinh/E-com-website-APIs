@@ -37,7 +37,6 @@ export class UsersService {
       where: { id, },
       relations: ['orders']
     });
-    if (!user) return null;
     return user;
   }
 
@@ -59,7 +58,6 @@ export class UsersService {
         email,
       }
     });
-    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
     return user;
   }
 
@@ -69,7 +67,7 @@ export class UsersService {
         phone,
       }
     });
-    if (!user) return null;
+
     return user;
   }
 
@@ -80,19 +78,13 @@ export class UsersService {
     const emailUser = await this.userRepository.findOneByCondition({ where: { email } });
     if (emailUser)
       throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: AppKey.ERROR_MESSAGE.USER.ERR_EMAIL_EXIST,
-        },
+        AppKey.ERROR_MESSAGE.USER.ERR_EMAIL_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     const phoneUser = await this.getByPhone(phone);
     if (phoneUser)
       throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST,
-        },
+        AppKey.ERROR_MESSAGE.USER.ERR_PHONE_EXIST,
         HttpStatus.BAD_REQUEST,
       );
 
@@ -106,12 +98,13 @@ export class UsersService {
       avatar: file,
       ...data,
     }
-    return await this.userRepository.save(user);
+    const newUser = await this.userRepository.save(user);
+    return newUser;
   }
 
   async update(id: number, updateUserDto: RoleUserDto) {
     const userFound = await this.findOne(id);
-
+    if (!userFound) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
     const { role } = updateUserDto;
     const user = {
       role,
@@ -150,6 +143,7 @@ export class UsersService {
       for (const id of ids) {
         // console.log(id);
         const user = await this.findOne(id);
+        if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_ID_NOT_VALID });
         if (user.role === AppObject.USER_MODULE.ROLE.PRO) throw new NotFoundException({ message: `${id} this is manager ` });
         // console.log(user);
         if (!user) await userNotExit.push(id);
@@ -170,11 +164,13 @@ export class UsersService {
 
   async verifyEmail(email: string) {
     const user = await this.getByEmail(email);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
     return await this.userRepository.save({ ...user, isVerify: true });
   }
 
   async resertPassword(email: string, newPassword: string) {
     const user = await this.getByEmail(email);
+    if (!user) throw new NotFoundException({ message: AppKey.ERROR_MESSAGE.USER.ERR_NOT_EMAIL_EXIST });
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(newPassword, salt);
     return await this.userRepository.save({ ...user, password: hashPassword });

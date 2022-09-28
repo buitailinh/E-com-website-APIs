@@ -1,3 +1,4 @@
+import { FavoriteItem } from './../../favorite_item/entities/favorite_item.entity';
 import { Order } from './../../order/entities/order.entity';
 import { BaseEntity } from './../../../share/database/BaseEntity';
 import { USER_CONST } from './../users.constant';
@@ -36,7 +37,12 @@ export class User extends BaseEntity {
     @Column({ default: false })
     isVerify: boolean;
 
+    @Column({ default: null })
+    refreshToken?: string;
+
     @OneToMany(() => Order, (order) => order.user)
     orders: Order[];
 
+    @OneToMany(() => FavoriteItem, (favoriteItem) => favoriteItem.user)
+    favorites: FavoriteItem[];
 }
