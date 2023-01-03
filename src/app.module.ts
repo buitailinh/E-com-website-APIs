@@ -26,6 +26,7 @@ import { FavoriteItemModule } from './api/favorite_item/favorite_item.module';
 import { BrandsModule } from './api/brands/brands.module';
 import { MinioClientModule } from './share/minio-client/minio-client.module';
 import { FileUploadModule } from './api/file-upload/file-upload.module';
+import { PaymentModule } from './share/payment/payment.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { FileUploadModule } from './api/file-upload/file-upload.module';
     FavoriteItemModule,
     BrandsModule,
     MinioClientModule,
-    FileUploadModule
+    FileUploadModule,
+    PaymentModule
   ],
   controllers: [],
   providers: [

@@ -7,10 +7,11 @@ import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { OrderRepository } from './order.repository';
 import { orderProvider } from './order.provider';
+import { PaymentModule } from 'src/share/payment/payment.module';
 
 
 @Module({
-  imports: [DatabaseModule, UsersModule, OrderDetailModule, VoucherModule],
+  imports: [DatabaseModule, UsersModule, OrderDetailModule, VoucherModule, PaymentModule],
   controllers: [OrderController],
   providers: [OrderService, OrderRepository, ...orderProvider],
   exports: [OrderService, OrderRepository]
